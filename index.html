@@ -1,0 +1,3564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>CHENMJ — 视觉设计师个人平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<style>
+/* ========== Design Tokens — Dark Blue ========== */
+:root {
+  --brand-bg: #060a18;
+  --brand-bg-deep: #030611;
+  --brand-surface: #0d1428;
+  --brand-card: #121b38;
+  --brand-blue: #3b82f6;
+  --brand-blue-bright: #60a5fa;
+  --brand-blue-dark: #1d4ed8;
+  --brand-cyan: #22d3ee;
+  --brand-cyan-bright: #67e8f9;
+  --brand-lime: #a3e635;
+  --brand-lime-bright: #d9f99d;
+  --brand-indigo: #6366f1;
+  --brand-purple: #818cf8;
+  --text-primary: #e8edff;
+  --text-secondary: #9aa8d4;
+  --text-muted: #5a6796;
+  --glow-blue: rgba(59, 130, 246, 0.28);
+  --glow-blue-strong: rgba(59, 130, 246, 0.5);
+  --glow-cyan: rgba(34, 211, 238, 0.22);
+  --glow-indigo: rgba(99, 102, 241, 0.2);
+  --glass-bg: rgba(30, 42, 80, 0.35);
+  --glass-bg-light: rgba(40, 55, 100, 0.25);
+  --glass-border: rgba(100, 130, 200, 0.12);
+  --glass-border-hover: rgba(59, 130, 246, 0.3);
+  --ease-silk: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--brand-bg);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+/* Ambient atmosphere — large, faint cyan/blue light fields fixed behind everything */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(900px 620px at 88% -8%, rgba(34,211,238,0.075), transparent 62%),
+    radial-gradient(820px 640px at -8% 42%, rgba(59,130,246,0.06), transparent 62%),
+    radial-gradient(760px 520px at 55% 112%, rgba(34,211,238,0.05), transparent 60%);
+  pointer-events: none;
+  z-index: -2;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--brand-bg-deep); }
+::-webkit-scrollbar-thumb { background: #1e2a4a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2d3a5e; }
+
+/* ========== Keyframes ========== */
+@keyframes glow-pulse-blue {
+  0%, 100% { box-shadow: 0 0 20px var(--glow-blue), 0 0 40px rgba(59,130,246,0.1); }
+  50% { box-shadow: 0 0 35px var(--glow-blue-strong), 0 0 70px rgba(59,130,246,0.18); }
+}
+@keyframes glow-pulse-cyan {
+  0%, 100% { box-shadow: 0 0 15px var(--glow-cyan); }
+  50% { box-shadow: 0 0 30px rgba(34,211,238,0.4); }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes watermark-shimmer {
+  0%, 100% { opacity: 0.04; }
+  50% { opacity: 0.08; }
+}
+@keyframes fluid-blob-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; }
+  33% { transform: translate(40px, -30px) scale(1.1); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  66% { transform: translate(-30px, 20px) scale(0.95); border-radius: 30% 70% 60% 40% / 40% 60% 30% 70%; }
+}
+@keyframes fluid-blob-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); border-radius: 50% 50% 40% 60% / 55% 35% 65% 45%; }
+  33% { transform: translate(-50px, 30px) scale(1.08); border-radius: 35% 65% 55% 45% / 40% 50% 50% 60%; }
+  66% { transform: translate(30px, -40px) scale(0.92); border-radius: 65% 35% 45% 55% / 30% 65% 35% 70%; }
+}
+@keyframes fluid-blob-3 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); border-radius: 45% 55% 65% 35% / 50% 40% 60% 50%; }
+  50% { transform: translate(20px, 40px) scale(1.12) rotate(180deg); border-radius: 55% 45% 35% 65% / 35% 55% 45% 65%; }
+}
+@keyframes flow-line {
+  0% { stroke-dashoffset: 1000; opacity: 0; }
+  20% { opacity: 0.4; }
+  80% { opacity: 0.4; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes particle-drift {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translate(var(--dx, 50px), var(--dy, -80px)) scale(0.5); opacity: 0; }
+}
+@keyframes shimmer-text {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ========== Page Background ========== */
+.page-bg-glow {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background:
+    radial-gradient(ellipse 50% 35% at 50% 22%, rgba(59,130,246,0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 65% 45% at 50% 38%, rgba(34,211,238,0.05) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 30% at 80% 70%, rgba(99,102,241,0.06) 0%, transparent 60%),
+    var(--brand-bg);
+  z-index: -2;
+  pointer-events: none;
+}
+.grid-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(100,130,200,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100,130,200,0.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* (Fluid hero backgrounds removed — reference layout uses solid blue gradient) */
+
+/* ========== Components ========== */
+/* Flowing light along card edges (conic gradient spin) */
+@property --edge-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes edge-flow {
+  to { --edge-angle: 360deg; }
+}
+.tl-card::after,
+.carousel-card::after,
+.advantage-card::after,
+.contact-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--edge-angle, 0deg),
+    transparent 0deg,
+    rgba(34, 211, 238, 0.95) 40deg,
+    rgba(163, 230, 53, 0.85) 80deg,
+    rgba(59, 130, 246, 0.6) 130deg,
+    transparent 190deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: edge-flow 5s linear infinite;
+  pointer-events: none;
+  z-index: 3;
+}
+.glass-card {
+  border-radius: 20px;
+  border: 1px solid rgba(148,190,255,0.16);
+  background: linear-gradient(160deg, rgba(148,190,255,0.08), rgba(148,190,255,0.03) 55%, rgba(34,211,238,0.04));
+  backdrop-filter: blur(20px) saturate(1.35);
+  -webkit-backdrop-filter: blur(20px) saturate(1.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    inset 0 0 0 1px rgba(255,255,255,0.02),
+    0 10px 32px rgba(10,22,48,0.32);
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.glass-card:hover {
+  border-color: rgba(120,180,255,0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    0 16px 40px rgba(10,22,48,0.36),
+    0 0 28px rgba(59,130,246,0.14);
+  transform: translateY(-2px);
+}
+
+.glass-card-cyan {
+  border-radius: 20px;
+  border: 1px solid rgba(34,211,238,0.26);
+  background: linear-gradient(160deg, rgba(34,211,238,0.10), rgba(148,190,255,0.04) 50%, rgba(12,24,48,0.18));
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.02),
+    0 10px 32px rgba(10,22,48,0.32);
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.glass-card-cyan:hover {
+  border-color: rgba(34,211,238,0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    0 16px 40px rgba(10,22,48,0.36),
+    0 0 32px rgba(34,211,238,0.16);
+  transform: translateY(-2px);
+}
+
+.btn-glow-blue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(59,130,246,0.3);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 10px 22px;
+  cursor: pointer;
+  box-shadow: 0 0 24px rgba(59,130,246,0.22), 0 4px 12px rgba(0,0,0,0.3);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  animation: glow-pulse-blue 3s ease-in-out infinite;
+  text-decoration: none;
+}
+.btn-glow-blue:hover {
+  box-shadow: 0 0 40px rgba(59,130,246,0.4), 0 6px 20px rgba(0,0,0,0.4);
+  transform: translateY(-1px);
+}
+.btn-glow-blue:active { transform: scale(0.96); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(120,150,220,0.15);
+  background: rgba(30,42,80,0.3);
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 12px;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.btn-ghost:hover {
+  border-color: rgba(34,211,238,0.35);
+  background: rgba(34,211,238,0.06);
+  color: var(--brand-cyan-bright);
+}
+
+.watermark-text {
+  font-size: clamp(80px, 14vw, 180px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: rgba(100,130,200,0.03);
+  -webkit-text-stroke: 1px rgba(100,130,200,0.05);
+  user-select: none;
+  pointer-events: none;
+  line-height: 1;
+  white-space: nowrap;
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: watermark-shimmer 4s ease-in-out infinite;
+}
+
+.animate-fade-in-up { animation: fade-in-up 0.6s cubic-bezier(0.4,0,0.2,1) both; }
+.animate-float { animation: float-y 4s ease-in-out infinite; }
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 80px);
+}
+
+/* ========== Navigation — Reference Style ========== */
+.nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  z-index: 100;
+  padding: 16px 0;
+  background: transparent;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.nav.scrolled {
+  background: transparent;
+  border-bottom: none;
+  padding: 12px 0;
+}
+.nav-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Unified pill navigation: centered clean pill with sliding active block */
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(26px) saturate(1.6);
+  -webkit-backdrop-filter: blur(26px) saturate(1.6);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.nav.scrolled .nav-pill {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+/* Center nav links — sliding blue gradient active pill */
+.nav-links {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  position: relative;
+  padding: 3px;
+  border-radius: 9999px;
+}
+.nav-links::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--pill-left, 0px);
+  width: var(--pill-width, 0px);
+  height: calc(100% - 6px);
+  transform: translateY(-50%);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #3b82f6, #22c55e);
+  box-shadow: 0 0 26px rgba(34,197,94,0.5), 0 0 10px rgba(59,130,246,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  z-index: 0;
+  pointer-events: none;
+}
+.nav-links a {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 10px 26px;
+  border-radius: 9999px;
+  transition: color 0.25s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+}
+.nav-links a:hover,
+.nav-links a.active {
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 768px) {
+  .nav-pill { padding: 6px; }
+  .nav-links { gap: 2px; padding: 2px; }
+  .nav-links a { font-size: 13px; padding: 9px 18px; }
+}
+@media (max-width: 560px) {
+  .nav-links a { font-size: 12px; padding: 8px 13px; }
+}
+
+/* ========== Hero — Reference character image background ========== */
+.hero {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  padding: 120px clamp(20px, 4vw, 80px) 44px;
+  background:
+    linear-gradient(90deg, rgba(4,10,24,0.72) 0%, rgba(4,10,24,0.4) 40%, rgba(4,10,24,0.18) 70%, rgba(4,10,24,0) 100%),
+    url('imges/hero-bg.jpg') center 30% / cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(28px, 4vw, 56px);
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4,10,24,0.45) 0%, rgba(4,10,24,0) 22%, rgba(4,10,24,0) 60%, rgba(4,10,24,0.7) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Side vertical text labels (like reference image) */
+.hero-side-label {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+.hero-side-left {
+  left: clamp(14px, 2vw, 32px);
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: left center;
+  white-space: nowrap;
+}
+.hero-side-left::before {
+  content: '';
+  width: 60px;
+  height: 1px;
+  background: rgba(255,255,255,0.35);
+}
+.hero-side-right {
+  right: clamp(14px, 2vw, 32px);
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: right center;
+  white-space: nowrap;
+}
+.hero-side-right::before {
+  content: '';
+  width: 60px;
+  height: 1px;
+  background: rgba(255,255,255,0.35);
+}
+.hero-corner-label {
+  position: absolute;
+  top: 110px;
+  right: clamp(20px, 4vw, 80px);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  text-align: right;
+  line-height: 1.7;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Glass info card positioned to follow the hand in the hero image */
+.hero-info-card {
+  position: absolute;
+  top: 48%;
+  right: clamp(60px, 15vw, 220px);
+  transform: translateY(-50%);
+  width: clamp(360px, 42vw, 560px);
+  padding: 18px 22px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(10,20,42,0.34);
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  color: rgba(255,255,255,0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    0 18px 48px rgba(8,18,40,0.34);
+  z-index: 4;
+  animation: hero-card-enter 1s 0.5s cubic-bezier(0.22,0.61,0.36,1) backwards, card-float 6s 1.6s ease-in-out infinite;
+}
+.hero-info-card .ic-label {
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 6px;
+}
+.hero-info-card .ic-title {
+  font-size: clamp(18px, 1.7vw, 26px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  color: var(--brand-lime);
+}
+.hero-info-card .ic-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 6px 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.72);
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+  line-height: 1.9;
+}
+.hero-info-card .ic-meta .ic-sep {
+  color: rgba(255,255,255,0.32);
+  pointer-events: none;
+}
+.hero-info-card .ic-meta em {
+  font-style: normal;
+  color: inherit;
+}
+.hero-info-card .ic-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 11px;
+}
+.hero-info-card .ic-pill {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+.hero-info-card:hover .ic-pill { background: rgba(255,255,255,0.09); }
+.hero-info-card .ic-pill:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.25); }
+.hero-info-card .ic-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: 0 0 8px currentColor;
+}
+.hero-info-card .ic-dot.gpt,
+.hero-info-card .ic-dot.sd,
+.hero-info-card .ic-dot.db,
+.hero-info-card .ic-dot.jm {
+  color: var(--brand-cyan);
+  background: linear-gradient(135deg, var(--brand-cyan), var(--brand-lime));
+}
+.hero-info-card .ic-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.14);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+}
+.hero-info-card .ic-foot svg {
+  width: 14px; height: 14px;
+  transition: transform 0.3s;
+}
+.hero-info-card:hover .ic-foot svg {
+  transform: translate(3px, -3px);
+}
+.hero-info-card:hover {
+  border-color: rgba(255,255,255,0.32);
+  background: rgba(14,26,52,0.44);
+}
+@keyframes card-float {
+  0%, 100% { transform: translateY(-50%); }
+  50% { transform: translateY(-55%); }
+}
+@media (max-width: 1100px) {
+  .hero-info-card { right: clamp(50px, 11vw, 130px); width: clamp(320px, 40vw, 470px); padding: 16px 18px 14px; }
+  .hero-info-card .ic-tools { gap: 5px; margin-bottom: 10px; }
+  .hero-info-card .ic-pill { padding: 5px 9px; font-size: 9px; gap: 5px; }
+}
+@media (max-width: 900px) {
+  .hero-info-card { display: none; }
+  .hero-side-label { display: none; }
+  .hero-corner-label { display: none; }
+}
+
+/* Left text */
+.hero-top {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: clamp(300px, 46vh, 520px);
+}
+.hero-text {
+  color: #fff;
+  text-align: left;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transform: scale(0.82);
+  transform-origin: left center;
+  margin-left: clamp(30px, 8vw, 150px);
+  will-change: transform;
+}
+.hero-title-large {
+  font-size: clamp(44px, 6.5vw, 96px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.04;
+  color: #fff;
+  margin-bottom: 24px;
+  text-shadow: 0 4px 34px rgba(0,0,0,0.45);
+  white-space: nowrap;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 1.45vw, 19px);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.9);
+  max-width: 580px;
+  white-space: nowrap;
+  margin-bottom: 30px;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.4);
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 10px 22px;
+  border-radius: 14px;
+  background: #a3e635;
+  color: #0a1228;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 14px 32px rgba(132,204,22,0.45);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  margin-bottom: 26px;
+}
+.hero-cta:hover {
+  transform: translateY(-2px);
+  background: #b6f24a;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 20px 42px rgba(132,204,22,0.6);
+}
+.hero-cta .arrow-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #0a1228;
+  color: #a3e635;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(196,230,255,0.14), rgba(140,220,255,0.07));
+  border: 1px solid rgba(163,230,255,0.22);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 10px 26px rgba(10,22,48,0.35);
+  color: rgba(255,255,255,0.95);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.35);
+  transition: all 0.35s var(--ease-silk, cubic-bezier(0.16,1,0.3,1));
+  cursor: default;
+}
+.hero-tag .tag-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #a3e635;
+  box-shadow: 0 0 10px rgba(163,230,53,0.8);
+  flex-shrink: 0;
+}
+.hero-tag:hover {
+  transform: translateY(-3px);
+  border-color: rgba(163,230,53,0.5);
+  background: linear-gradient(135deg, rgba(196,230,255,0.2), rgba(140,220,255,0.1));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 14px 32px rgba(10,22,48,0.42), 0 0 18px rgba(163,230,53,0.18);
+}
+@media (max-width: 600px) {
+  .hero { min-height: 92vh; padding-top: 100px; }
+  .hero-text { text-align: left; transform: scale(0.72); margin-left: 14px; }
+}
+@media (max-width: 900px) {
+  .hero-text { transform: scale(0.68); margin-left: clamp(20px, 5vw, 70px); }
+}
+
+/* ========== Section Common ========== */
+.section {
+  padding: 100px 0;
+  position: relative;
+}
+/* Soft blue-cyan wash covering the whole section — bleeds past both edges
+   so consecutive sections blend into each other with no hard line */
+.section::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -90px;
+  bottom: -90px;
+  background: linear-gradient(180deg,
+    rgba(59,130,246,0) 0%,
+    rgba(37,99,235,0.035) 15%,
+    rgba(34,211,238,0.05) 42%,
+    rgba(59,130,246,0.055) 62%,
+    rgba(37,99,235,0.04) 84%,
+    rgba(59,130,246,0) 100%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+/* Highlighted cyan glow at the top-right corner (content sections only, not hero) */
+.section::before {
+  content: '';
+  position: absolute;
+  top: -110px;
+  right: -150px;
+  width: clamp(340px, 42vw, 600px);
+  height: clamp(340px, 42vw, 600px);
+  background: radial-gradient(circle at center,
+    rgba(34,211,238,0.15) 0%,
+    rgba(56,189,248,0.08) 38%,
+    rgba(59,130,246,0.045) 52%,
+    transparent 70%
+  );
+  filter: blur(12px);
+  pointer-events: none;
+  z-index: -1;
+}
+.section-header {
+  margin-bottom: 64px;
+}
+.section-num {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  color: var(--brand-blue-bright);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  display: block;
+}
+.section-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.1;
+  cursor: default;
+}
+/* EN on top (big) / CN below (small) — per-character tipsy wobble on hover */
+.title-en {
+  font-size: clamp(38px, 6.2vw, 92px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.12;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #ffffff;
+}
+.title-cn {
+  font-size: clamp(20px, 2vw, 30px);
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  color: var(--brand-lime);
+  white-space: nowrap;
+  padding-left: 0.1em;
+}
+.section-title .ch {
+  display: inline-block;
+  transform-origin: 50% 78%;
+  transition: transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+  transition-delay: var(--dly, 0s);
+  will-change: transform;
+}
+/* hover: each char tips over to its own angle and FREEZES there; leave: springs back */
+.section-title:hover .ch {
+  transform: rotate(var(--r1, 6deg));
+}
+/* Chinese titles stay still on hover — only English chars wobble */
+.section-title:hover .title-cn .ch {
+  transform: none;
+}
+@media (max-width: 600px) {
+  .title-en { font-size: clamp(24px, 6.8vw, 38px); }
+  .title-cn { font-size: 14px; letter-spacing: 0.24em; }
+}
+
+/* ========== Hero — Bottom Carousel (Drag to slide) ========== */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  z-index: 2;
+  padding-bottom: 20px;
+}
+.carousel {
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  padding: 18px 0 22px;
+}
+.carousel.dragging { cursor: grabbing; }
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  transform: translateX(var(--carousel-x, 0px));
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+  padding: 0;
+}
+.carousel.dragging .carousel-track { transition: none; }
+
+.carousel-card {
+  flex: 0 0 185px;
+  height: 231px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  color: #0a1228;
+  box-shadow: 0 12px 34px rgba(12,26,52,0.30), inset 0 1px 0 rgba(255,255,255,0.6);
+  position: relative;
+  transform-origin: center center;
+  transition: transform 0.38s cubic-bezier(0.34,1.3,0.5,1), box-shadow 0.38s ease;
+  display: flex;
+  flex-direction: column;
+}
+.carousel-card:hover {
+  transform: scale(1.09);
+  z-index: 6;
+  box-shadow: 0 22px 54px rgba(12,26,52,0.38), 0 0 0 2px rgba(163,230,53,0.4);
+}
+
+.cc-tags {
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cc-tags-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+.cc-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cc-tag {
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+}
+.cc-tag.dark { background: #0a1228; color: #fff; border-color: #0a1228; }
+.cc-tags-footer {
+  margin-top: auto;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0a1228;
+}
+
+.cc-image {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.cc-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.65));
+}
+.cc-image-stats {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  color: #fff;
+  z-index: 2;
+  font-size: 12px;
+}
+.cc-image-stats .label {
+  font-size: 11px;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.cc-image-stats .value {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* Pure photo card — no stats overlay, just a small category tag */
+.cc-photo {
+  background-size: cover;
+  background-position: center;
+  background-color: #0a1228;
+  position: relative;
+}
+.cc-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.55));
+  pointer-events: none;
+}
+.cc-photo-tag {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  color: #0a1228;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+.cc-photo-tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a3e635;
+  box-shadow: 0 0 6px rgba(163,230,53,0.8);
+}
+
+.cc-dark {
+  background: #0a1228;
+  color: #fff;
+  padding: 24px 22px;
+  justify-content: center;
+  font-size: clamp(18px, 1.6vw, 24px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  position: relative;
+}
+.cc-dark::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #84cc16;
+  box-shadow: 0 0 18px rgba(132,204,22,0.7);
+}
+
+.cc-stats {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cc-stats-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.06em;
+}
+.cc-stats-amount {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0a1228;
+  line-height: 1.1;
+}
+.cc-stats-amount .total {
+  font-size: 15px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+.cc-progress {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.cc-progress-bar {
+  height: 100%;
+  width: 55%;
+  background: linear-gradient(90deg, #3b82f6, #22d3ee);
+  border-radius: 9999px;
+}
+.cc-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+.cc-stats-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #475569;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 6px;
+}
+.cc-stats-item:last-child { border: 0; padding-bottom: 0; }
+.cc-stats-item .v { font-weight: 700; color: #0a1228; }
+
+.cc-meta {
+  padding: 20px;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+}
+.cc-meta-title {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #0a1228;
+}
+.cc-meta-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cc-meta-tag {
+  font-size: 12px;
+  padding: 5px 12px;
+  background: #fff;
+  border-radius: 9999px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.95);
+  color: #0a1228;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.2);
+  z-index: 5;
+  transition: transform 0.25s, background 0.25s;
+}
+.carousel-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.06); }
+.carousel-arrow.prev { left: clamp(10px, 2vw, 28px); }
+.carousel-arrow.next { right: clamp(10px, 2vw, 28px); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero { padding-top: 96px; gap: 28px; }
+  .carousel-card { flex: 0 0 170px; height: 224px; }
+  .carousel-arrow { width: 34px; height: 34px; }
+}
+@media (max-width: 600px) {
+  .hero-title-large { font-size: clamp(32px, 9vw, 52px); }
+  .carousel-card { flex: 0 0 145px; height: 200px; }
+  .carousel-arrow { display: none; }
+}
+
+/* ========== Work Experience — Timeline Tree ========== */
+.timeline {
+  position: relative;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 40px 0 40px;
+}
+
+/* Center vertical line */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: var(--tl-h, 100%);
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg,
+    transparent 0%,
+    #84cc16 8%,
+    #22d3ee 50%,
+    #a3e635 92%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px rgba(132,204,22,0.35), 0 0 24px rgba(34,211,238,0.2);
+  z-index: 1;
+  transition: height 0.25s ease-out;
+}
+/* Flowing light traveling down the line */
+.timeline::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: var(--tl-h, 100%);
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg,
+    rgba(163,230,53,0),
+    rgba(163,230,53,0.95),
+    rgba(34,211,238,0.95),
+    rgba(163,230,53,0)
+  );
+  background-size: 100% 160px;
+  background-repeat: repeat-y;
+  box-shadow: 0 0 10px rgba(163,230,53,0.55), 0 0 18px rgba(34,211,238,0.35);
+  z-index: 1;
+  pointer-events: none;
+  animation: tlFlow 2.4s linear infinite;
+  transition: height 0.25s ease-out;
+}
+@keyframes tlFlow {
+  from { background-position: 0 -160px; }
+  to   { background-position: 0 0; }
+}
+
+/* Timeline item — lifted above the center line so nodes sit on top of it */
+.tl-item {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  align-items: center;
+  margin-bottom: 56px;
+}
+.tl-item:last-child { margin-bottom: 0; }
+
+/* Node (center) */
+.tl-node {
+  grid-column: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tl-node-inner {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #84cc16, #22d3ee);
+  box-shadow: 0 0 16px rgba(132,204,22,0.45), 0 0 28px rgba(34,211,238,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #06121e;
+  letter-spacing: 0.04em;
+  transition: all 0.35s ease;
+}
+.tl-node-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(132,204,22,0.45);
+  background: linear-gradient(160deg, rgba(20,36,68,0.92), rgba(12,22,44,0.94));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.35s ease;
+}
+.tl-node-pulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(132,204,22,0);
+  transition: all 0.4s ease;
+}
+
+/* Connector line from node to card */
+.tl-connector {
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  width: 60px;
+  transform: translateY(-50%);
+  z-index: 1;
+  transition: all 0.4s ease;
+}
+.tl-item.left .tl-connector {
+  right: calc(50% + 22px);
+  background: linear-gradient(90deg, transparent, rgba(132,204,22,0.5));
+}
+.tl-item.right .tl-connector {
+  left: calc(50% + 22px);
+  background: linear-gradient(-90deg, transparent, rgba(132,204,22,0.5));
+}
+
+/* Card — frosted glass */
+.tl-card {
+  position: relative;
+  padding: 28px 32px;
+  border-radius: 18px;
+  background: linear-gradient(155deg, rgba(148,190,255,0.09), rgba(148,190,255,0.03) 45%, rgba(34,211,238,0.045));
+  border: 1px solid rgba(148,190,255,0.16);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    inset 0 -1px 0 rgba(255,255,255,0.03),
+    0 10px 32px rgba(10,22,48,0.32);
+  transition: transform 0.4s cubic-bezier(0.22,0.61,0.36,1), border-color 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+.tl-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(132,204,22,0.12), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.tl-item.left .tl-card {
+  grid-column: 1;
+  margin-right: 0;
+  text-align: left;
+}
+.tl-item.right .tl-card {
+  grid-column: 3;
+  margin-left: 0;
+  text-align: left;
+}
+
+/* Time label (opposite side of card) */
+.tl-time {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--brand-cyan-bright);
+  padding: 8px 16px;
+  border: 1px solid rgba(34,211,238,0.25);
+  border-radius: 9999px;
+  background: rgba(34,211,238,0.05);
+  align-self: center;
+  transition: all 0.35s ease;
+  text-shadow: 0 0 14px rgba(34,211,238,0.3);
+  white-space: nowrap;
+}
+.tl-item.left .tl-time { grid-column: 3; justify-self: start; }
+.tl-item.right .tl-time { grid-column: 1; justify-self: end; }
+
+/* Card content */
+.tl-card-company {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.tl-card-role {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  line-height: 1.3;
+}
+.tl-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--brand-lime);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tl-card-label::before {
+  content: '';
+  display: inline-block;
+  width: 12px; height: 1px;
+  background: var(--brand-lime);
+}
+.tl-card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+.tl-card-list li {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding-left: 14px;
+  position: relative;
+  margin-bottom: 4px;
+}
+.tl-card-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 9px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #84cc16, #22d3ee);
+  box-shadow: 0 0 6px rgba(132,204,22,0.6);
+}
+.tl-card-achievement {
+  font-size: 13px;
+  font-weight: 500;
+  color: #d9f99d;
+  line-height: 1.65;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(132,204,22,0.08);
+  border: 1px solid rgba(132,204,22,0.18);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.tl-card-achievement::before {
+  content: '✦';
+  color: var(--brand-lime);
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.tl-card-achievement:last-child { margin-bottom: 0; }
+
+/* Key-content mini cards inside each timeline card */
+.tl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.tl-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 10px;
+  background: rgba(34,211,238,0.07);
+  border: 1px solid rgba(34,211,238,0.22);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  transition: all 0.3s cubic-bezier(0.22,0.61,0.36,1);
+  cursor: default;
+}
+.tl-tag .tl-tag-num {
+  font-size: 16px;
+  font-weight: 800;
+  color: #a3e635;
+  letter-spacing: 0;
+  text-shadow: 0 0 12px rgba(163,230,53,0.4);
+}
+.tl-tag .tl-tag-unit {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--brand-cyan-bright);
+}
+.tl-card:hover .tl-tag {
+  border-color: rgba(34,211,238,0.45);
+  background: rgba(34,211,238,0.12);
+  transform: translateY(-2px);
+}
+
+/* ============ Hover Interactions ============ */
+
+/* Hover card -> activate node + connector + time */
+.tl-item:hover .tl-card {
+  transform: translateY(-6px) scale(1.03);
+  border-color: rgba(163,230,53,0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    0 18px 44px rgba(10,22,48,0.38),
+    0 0 34px rgba(132,204,22,0.14);
+}
+.tl-item:hover .tl-card::before { opacity: 1; }
+
+.tl-item:hover .tl-node {
+  transform: scale(1.18);
+}
+.tl-item:hover .tl-node-ring {
+  border-color: rgba(132,204,22,0.9);
+  box-shadow: 0 0 0 4px rgba(132,204,22,0.12), 0 0 22px rgba(132,204,22,0.5);
+}
+.tl-item:hover .tl-node-inner {
+  background: linear-gradient(135deg, #a3e635, #22d3ee);
+  box-shadow: 0 0 22px rgba(132,204,22,0.65), 0 0 36px rgba(34,211,238,0.35);
+}
+.tl-item:hover .tl-node-pulse {
+  inset: -14px;
+  border-color: rgba(132,204,22,0.35);
+  animation: tl-pulse 1.6s ease-out infinite;
+}
+
+.tl-item:hover .tl-connector {
+  width: 90px;
+}
+.tl-item.left:hover .tl-connector {
+  background: linear-gradient(90deg, transparent, #84cc16);
+  box-shadow: 0 0 12px rgba(132,204,22,0.6);
+}
+.tl-item.right:hover .tl-connector {
+  background: linear-gradient(-90deg, transparent, #84cc16);
+  box-shadow: 0 0 12px rgba(132,204,22,0.6);
+}
+
+.tl-item:hover .tl-time {
+  border-color: rgba(132,204,22,0.5);
+  background: rgba(132,204,22,0.12);
+  color: #d9f99d;
+  text-shadow: 0 0 16px rgba(163,230,53,0.5);
+}
+
+@keyframes tl-pulse {
+  0% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* Card hover scale origin — grows towards the center line */
+.tl-item.left .tl-card { transform-origin: right center; }
+.tl-item.right .tl-card { transform-origin: left center; }
+
+/* Responsive — stack on mobile */
+@media (max-width: 860px) {
+  .tl-item {
+    grid-template-columns: 60px 1fr;
+    gap: 0;
+    margin-bottom: 28px;
+  }
+  .tl-node { grid-column: 1; }
+  .tl-item.left .tl-card,
+  .tl-item.right .tl-card {
+    grid-column: 2;
+    margin: 0;
+  }
+  .tl-item.left .tl-time,
+  .tl-item.right .tl-time {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .tl-item.left .tl-connector,
+  .tl-item.right .tl-connector {
+    left: 22px;
+    right: auto;
+    width: 30px;
+    background: linear-gradient(90deg, #84cc16, transparent);
+  }
+  .tl-item.left:hover .tl-connector,
+  .tl-item.right:hover .tl-connector {
+    width: 44px;
+    background: linear-gradient(90deg, #84cc16, transparent);
+  }
+  .timeline::before,
+  .timeline::after { left: 22px; }
+}
+
+
+/* ========== Portfolio ========== */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .portfolio-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 1200px) {
+  .portfolio-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.portfolio-card { padding: 0; overflow: hidden; cursor: pointer; }
+.portfolio-card-header { padding: 28px 28px 20px; }
+.portfolio-card-title { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.portfolio-card-subtitle { font-size: 15px; font-weight: 300; color: var(--text-muted); margin-bottom: 12px; }
+.portfolio-card-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--brand-blue-bright);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.15);
+}
+.portfolio-card-images { display: grid; gap: 2px; padding: 0 2px 2px; }
+.portfolio-card-images.cols-2 { grid-template-columns: 1fr 1fr; }
+.portfolio-card-images.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.portfolio-img-placeholder {
+  aspect-ratio: 4/3;
+  background:
+    linear-gradient(135deg, rgba(59,130,246,0.03), rgba(100,130,200,0.05)),
+    repeating-linear-gradient(45deg, rgba(100,130,200,0.015) 0px, rgba(100,130,200,0.015) 10px, transparent 10px, transparent 20px);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.portfolio-img-placeholder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(34,211,238,0.04), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.portfolio-card:hover .portfolio-img-placeholder::after { opacity: 1; }
+.portfolio-card:hover .portfolio-img-placeholder {
+  background:
+    linear-gradient(135deg, rgba(59,130,246,0.06), rgba(100,130,200,0.05)),
+    repeating-linear-gradient(45deg, rgba(100,130,200,0.015) 0px, rgba(100,130,200,0.015) 10px, transparent 10px, transparent 20px);
+}
+.portfolio-img-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(120,150,220,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(120,150,220,0.3);
+  font-size: 14px;
+}
+
+/* ========== Case Sharing — dual-row marquee ========== */
+.portfolio-rows {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  /* sit outside the section's blue wash so it doesn't get dimmed */
+}
+.marquee {
+  position: relative;
+  overflow: hidden;
+  padding: 8px 0;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.marquee-track {
+  display: flex;
+  gap: 22px;
+  width: max-content;
+  animation: marquee-scroll 42s linear infinite;
+  will-change: transform;
+}
+.marquee.reverse .marquee-track {
+  animation-direction: reverse;
+  animation-duration: 48s;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* Case card — clean 16:9 image area + bottom text row */
+.case-card {
+  flex: 0 0 auto;
+  width: clamp(320px, 32vw, 420px);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  transition: transform 0.45s var(--ease-silk, cubic-bezier(0.16,1,0.3,1));
+}
+.case-card:hover { transform: translateY(-6px); }
+.case-image {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  isolation: isolate;
+  background-size: cover;
+  background-position: center;
+}
+.case-image::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.18), transparent 55%),
+    radial-gradient(circle at 80% 80%, rgba(0,0,0,0.22), transparent 60%);
+  z-index: 1;
+  pointer-events: none;
+}
+.case-foot {
+  padding: 13px 20px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  background: linear-gradient(180deg, rgba(10,22,48,0.35), rgba(10,22,48,0.55));
+}
+.case-foot .name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.92);
+}
+.case-foot .count {
+  color: #a3e635;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* ========== Case Sharing — clickable cover cards inside the marquees ========== */
+.case-card {
+  border: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.case-card .case-image { background: #0b1226; }
+.case-card .case-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.case-card:hover .case-image img { transform: scale(1.06); }
+.case-card:focus-visible {
+  outline: 2px solid #a3e635;
+  outline-offset: 3px;
+}
+
+/* Lightbox */
+.case-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(5, 8, 18, 0.96);
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.case-lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.case-lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(13, 27, 54, 0.72);
+  color: #fff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.case-lightbox-close:hover { background: rgba(255,255,255,0.18); transform: scale(1.08); }
+.case-lightbox-prev,
+.case-lightbox-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(13, 27, 54, 0.62);
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.case-lightbox-prev { left: 4px; }
+.case-lightbox-next { right: 4px; }
+.case-lightbox-prev:hover,
+.case-lightbox-next:hover { background: rgba(255,255,255,0.18); transform: translateY(-50%) scale(1.08); }
+.case-lightbox-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding: clamp(16px, 4vh, 48px) clamp(16px, 4vw, 48px);
+  gap: 22px;
+}
+.case-lightbox-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 10px 56px;
+}
+.case-lightbox-main img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+  transform-origin: center center;
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  cursor: grab;
+  user-select: none;
+}
+.case-lightbox-main img.is-grabbing { cursor: grabbing; }
+.lightbox-viewport {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.lightbox-zoombar {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(11, 18, 38, 0.72);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px) saturate(1.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  z-index: 12;
+}
+.zoom-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.zoom-btn:hover { background: rgba(255,255,255,0.14); transform: scale(1.08); border-color: rgba(255,255,255,0.25); }
+.zoom-btn.reset { font-size: 15px; }
+.zoom-level {
+  min-width: 46px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 0.02em;
+}
+.case-lightbox-thumbs {
+  flex: 0 0 clamp(170px, 22%, 280px);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: min-content;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 6px;
+  align-content: start;
+}
+.case-lightbox-thumbs button {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  background: #0b1226;
+  opacity: 0.72;
+  transition: opacity 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+.case-lightbox-thumbs button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.case-lightbox-thumbs button:hover { opacity: 1; transform: scale(1.03); }
+.case-lightbox-thumbs button.active {
+  opacity: 1;
+  border-color: #a3e635;
+  box-shadow: 0 0 18px rgba(163,230,53,0.25);
+}
+@media (max-width: 900px) {
+  .case-card { width: min(78vw, 360px); }
+  .case-lightbox-inner { flex-direction: column; padding: 70px 16px 16px; }
+  .case-lightbox-main { padding: 0 44px; order: 1; }
+  .case-lightbox-thumbs {
+    flex: 0 0 auto;
+    height: 110px;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    grid-auto-flow: column;
+    overflow-x: auto;
+    overflow-y: hidden;
+    order: 2;
+  }
+  .case-lightbox-prev { left: 6px; }
+  .case-lightbox-next { right: 6px; }
+}
+@media (max-width: 520px) {
+  .case-card { width: 84vw; }
+}
+
+/* ========== Case Sharing 2 — stacked carousel ========== */
+.cs2-stage {
+  position: relative;
+  width: 100%;
+  height: clamp(440px, 56vw, 600px);
+  perspective: 1400px;
+  overflow: visible;
+  isolation: isolate;
+}
+.cs2-deck {
+  position: absolute; inset: 0;
+}
+.cs2-card {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(260px, 30vw, 400px);
+  aspect-ratio: 3 / 4;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #0b1226;
+  box-shadow: 0 18px 50px rgba(10,22,48,0.55), 0 2px 6px rgba(0,0,0,0.3);
+  /* Only transform + opacity are animated — both run on the GPU compositor.
+     filter/backdrop-filter are deliberately NOT transitioned (huge jank source). */
+  transition: transform 0.9s var(--ease-silk, cubic-bezier(0.16,1,0.3,1)),
+              opacity 0.65s ease;
+  will-change: transform, opacity;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  user-select: none;
+}
+.cs2-card::before {
+  /* bottom gradient scrim so footer text stays readable over photos */
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(to top, rgba(6,12,28,0.82) 0%, rgba(6,12,28,0.28) 32%, rgba(6,12,28,0) 55%);
+  pointer-events: none;
+  z-index: 2;
+}
+.cs2-card .cs2-cover {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cs2-card::after {
+  /* subtle inner border highlight */
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12),
+              inset 0 0 0 1px rgba(255,255,255,0.05);
+  pointer-events: none;
+  z-index: 4;
+}
+.cs2-meta {
+  position: absolute; top: 14px; left: 14px; right: 14px;
+  display: flex; justify-content: space-between;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.78);
+  z-index: 3;
+}
+.cs2-play {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+.cs2-play i {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #1a0a3a; padding-left: 4px;
+  font-style: normal;
+  box-shadow: 0 12px 40px rgba(255,255,255,0.25);
+}
+.cs2-body {
+  position: absolute; left: 16px; right: 16px; top: 50%;
+  transform: translateY(-30%);
+  z-index: 2;
+}
+.cs2-title {
+  font-size: clamp(22px, 3.2vw, 36px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.0;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+  color: #fff;
+}
+.cs2-sub {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.75);
+}
+.cs2-foot {
+  position: absolute;
+  left: 14px; right: 14px; bottom: 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.86);
+  z-index: 3;
+}
+.cs2-foot .badge {
+  background: rgba(255,255,255,0.14);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.cs2-foot .arrow {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,255,255,0.16);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.cs2-nav {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(13, 27, 54, 0.82);
+  color: #fff;
+  font-size: 22px; line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+.cs2-nav:hover {
+  background: rgba(163,230,53,0.25);
+  border-color: rgba(163,230,53,0.6);
+  transform: translateY(-50%) scale(1.08);
+}
+.cs2-nav.prev { left: clamp(8px, 3vw, 32px); }
+.cs2-nav.next { right: clamp(8px, 3vw, 32px); }
+@media (max-width: 720px) {
+  .cs2-stage { height: 460px; }
+  .cs2-nav { width: 36px; height: 36px; font-size: 18px; }
+}
+
+/* ========== Advantages ========== */
+.advantages-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .advantages-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.advantage-card { padding: 30px 20px 26px; position: relative; overflow: hidden; }
+.advantage-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.advantage-card-num {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  color: var(--text-secondary);
+  display: block;
+}
+.advantage-card-num span { color: var(--text-muted); }
+.advantage-card-tag {
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: rgba(34,211,238,0.95);
+  border: 1px solid rgba(34,211,238,0.32);
+  background: rgba(34,211,238,0.08);
+  white-space: nowrap;
+}
+.advantage-card-title { font-size: clamp(13px, 1.25vw, 22px); font-weight: 700; color: #fff; margin-bottom: 12px; line-height: 1.35; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.advantage-card-title em {
+  display: inline;
+  font-style: normal;
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 0 7px;
+  color: var(--brand-cyan);
+}
+.advantage-card-desc { font-size: 14px; font-weight: 300; color: var(--text-secondary); line-height: 1.75; margin-bottom: 0; }
+.advantage-card-divider {
+  height: 1px;
+  margin: 14px 0 12px;
+  background: linear-gradient(90deg, rgba(34,211,238,0.45), rgba(163,230,53,0.18), transparent 82%);
+}
+.advantage-card-desc-item {
+  display: block;
+  padding-left: 16px;
+  position: relative;
+  margin-bottom: 7px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.advantage-card-desc-item:last-child { margin-bottom: 0; }
+.advantage-card-desc-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, rgba(34,211,238,0.95), rgba(163,230,53,0.8));
+}
+.advantage-card-glow {
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,211,238,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+/* ========== Contact Section (reference layout) ========== */
+.contact-section {
+  padding: 120px 0 80px;
+  min-height: auto;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: clamp(36px, 6vw, 80px);
+  align-items: center;
+}
+.contact-left { max-width: 680px; }
+.contact-headline {
+  font-size: clamp(40px, 5.6vw, 84px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin-bottom: 32px;
+  text-transform: uppercase;
+}
+.contact-headline .ch-line {
+  display: block;
+  white-space: nowrap;
+}
+.contact-headline .highlight {
+  color: #a3e635;
+  text-shadow: 0 0 30px rgba(163,230,53,0.45);
+}
+.contact-headline .arrow {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-left: 0.12em;
+  vertical-align: -0.06em;
+  color: #fff;
+}
+.contact-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px 8px 10px;
+  border-radius: 9999px;
+  background: #a3e635;
+  color: #0a1228;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 14px 32px rgba(132,204,22,0.45);
+  transition: all 0.35s var(--ease-silk, cubic-bezier(0.16,1,0.3,1));
+}
+.contact-pill:hover {
+  transform: translateY(-3px);
+  background: #b6f24a;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 20px 42px rgba(132,204,22,0.55);
+}
+.contact-pill-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #0a1228;
+  color: #a3e635;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.contact-pill-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.contact-right {
+  display: flex;
+  justify-content: flex-end;
+}
+.contact-card {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  padding: 32px 28px 28px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(24,34,60,0.72), rgba(12,22,44,0.62));
+  border: 1px solid rgba(163,230,255,0.16);
+  backdrop-filter: blur(24px) saturate(1.35);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 24px 60px rgba(10,22,48,0.42);
+  color: rgba(255,255,255,0.92);
+}
+.contact-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #a3e635;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+.contact-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+.contact-list li {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.92);
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.contact-list li:last-child { border-bottom: none; }
+.contact-list .key {
+  display: inline-block;
+  min-width: 4.2em;
+  color: rgba(255,255,255,0.55);
+  font-weight: 400;
+  margin-right: 6px;
+}
+.contact-card-tag {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 24px;
+}
+.contact-qr {
+  width: clamp(140px, 15vw, 168px);
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  background: #fff;
+  padding: 10px;
+  overflow: hidden;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(10,22,48,0.35);
+}
+.contact-qr svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.contact-qr img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: #fff;
+}
+
+/* ========== Footer ========== */
+.footer {
+  padding: 60px 24px 40px;
+  text-align: center;
+  border-top: 1px solid var(--glass-border);
+  margin-top: 40px;
+}
+.footer-text { font-size: 13px; font-weight: 300; color: var(--text-muted); letter-spacing: 0.04em; margin-bottom: 8px; }
+.footer-copyright { font-size: 12px; color: var(--text-muted); letter-spacing: 0.08em; opacity: 0.6; }
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  body { min-height: auto; overflow-x: hidden; }
+  .container { padding: 0 20px; }
+  .nav-inner { padding: 0 16px; }
+  .section { padding: 64px 0; }
+  .section-header { margin-bottom: 40px; }
+  .hero { padding: 120px 20px 60px; }
+  .advantage-card { padding: 28px 24px; }
+  .fluid-blob { filter: blur(40px); }
+  .contact-grid { grid-template-columns: 1fr; }
+  .contact-right { justify-content: flex-start; }
+  .contact-card { max-width: none; }
+  .contact-headline { margin-bottom: 26px; }
+}
+
+/* ========== Scroll Reveal — silky per-screen entrance animations ========== */
+/* Uses CSS animations (not transitions) so hover transforms stay untouched
+   the moment the entrance finishes. Custom props drive direction per block. */
+@keyframes reveal-enter {
+  from {
+    opacity: 0;
+    transform: translate(var(--rv-x, 0px), var(--rv-y, 44px)) scale(var(--rv-s, 1));
+    filter: blur(var(--rv-b, 10px));
+  }
+}
+@keyframes ch-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.55em) rotate(calc(var(--r1, 5deg) * -0.5));
+    filter: blur(6px);
+  }
+}
+
+/* Hidden until the observer marks it visible */
+.reveal:not(.visible) { opacity: 0; }
+
+/* Silk entrance once visible */
+.reveal.visible {
+  animation: reveal-enter 1.05s var(--ease-silk) backwards;
+  animation-delay: var(--rv-dly, 0s);
+}
+
+/* Timeline items — glide in from their own side */
+.tl-item.left.reveal  { --rv-x: -64px; --rv-y: 30px; --rv-b: 8px; }
+.tl-item.right.reveal { --rv-x: 64px;  --rv-y: 30px; --rv-b: 8px; }
+
+/* Portfolio cards — soft pop-up */
+.portfolio-card.reveal { --rv-y: 52px; --rv-s: 0.94; }
+
+/* Advantage cards — slide up */
+.advantage-card.reveal { --rv-y: 56px; --rv-s: 0.96; }
+
+/* Footer — gentle rise */
+.footer.reveal { --rv-y: 24px; --rv-b: 6px; }
+
+/* Section title characters — float up one by one (chars split by JS),
+   each entering tilted opposite to its hover angle, then settling */
+.section-header.reveal:not(.visible) .ch { opacity: 0; }
+.section-header.reveal.visible .ch {
+  animation: ch-enter 0.85s var(--ease-silk) backwards;
+  animation-delay: calc(0.35s + var(--dly, 0s));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal:not(.visible) { opacity: 1; }
+  .reveal.visible,
+  .section-header.reveal.visible .ch { animation: none; }
+}
+
+/* ========== Hero Entrance — on load ========== */
+@keyframes hero-enter {
+  from { opacity: 0; transform: translateY(36px); filter: blur(10px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes hero-card-enter {
+  from { opacity: 0; transform: translateY(-20%); }
+  to { opacity: 1; transform: translateY(-30%); }
+}
+.hero-text > * { animation: hero-enter 0.9s cubic-bezier(0.22,0.61,0.36,1) backwards; }
+.hero-text > *:nth-child(1) { animation-delay: 0.12s; }
+.hero-text > *:nth-child(2) { animation-delay: 0.28s; }
+.hero-text > *:nth-child(3) { animation-delay: 0.4s; }
+.hero-text > *:nth-child(4) { animation-delay: 0.52s; }
+.hero-text > *:nth-child(5) { animation-delay: 0.6s; }
+.hero-side-label,
+.hero-corner-label { animation: hero-fade-in 1.4s 0.7s backwards; }
+.hero-carousel { animation: hero-enter 1s 0.7s cubic-bezier(0.22,0.61,0.36,1) backwards; }
+</style>
+</head>
+<body>
+
+<!-- Background Layers -->
+<div class="page-bg-glow"></div>
+<div class="grid-bg"></div>
+
+<!-- Case Sharing Lightbox -->
+<div class="case-lightbox" id="caseLightbox" aria-hidden="true">
+  <button class="case-lightbox-close" type="button" aria-label="关闭">&times;</button>
+  <div class="case-lightbox-inner">
+    <div class="case-lightbox-main">
+      <button class="case-lightbox-prev" type="button" aria-label="上一张">&#8249;</button>
+      <div class="lightbox-viewport" id="lightboxViewport">
+        <img id="lightboxMain" src="" alt="">
+      </div>
+      <button class="case-lightbox-next" type="button" aria-label="下一张">&#8250;</button>
+      <div class="lightbox-zoombar">
+        <button class="zoom-btn" type="button" data-zoom="out" aria-label="缩小">&#8722;</button>
+        <span class="zoom-level" id="zoomLevel">100%</span>
+        <button class="zoom-btn" type="button" data-zoom="in" aria-label="放大">&#43;</button>
+        <button class="zoom-btn reset" type="button" data-zoom="reset" aria-label="重置">&#8634;</button>
+      </div>
+    </div>
+    <div class="case-lightbox-thumbs" id="lightboxThumbs"></div>
+  </div>
+</div>
+
+<!-- Navigation — Reference Style -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-pill">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#hero" class="active" data-nav>关于我</a></li>
+        <li><a href="#work" data-nav>工作经历</a></li>
+        <li><a href="#portfolio" data-nav>个人作品</a></li>
+        <li><a href="#advantages" data-nav>个人优势</a></li>
+        <li><a href="#contact" data-nav>联系我</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- 01 / HERO — Reference character image background -->
+<section class="hero" id="hero">
+
+  <!-- Top-right corner label -->
+  <div class="hero-corner-label">
+    Design<br>Studio Edited<br>Design Story
+  </div>
+
+  <!-- Center glass info card (right-middle) -->
+  <a href="#case-sharing-2" class="hero-info-card">
+    <div class="ic-title">AI × VISUAL</div>
+    <div class="ic-meta"><span><em>AI</em>详情页</span><span class="ic-sep">/</span><span><em>AI</em>活动页</span><span class="ic-sep">/</span><span><em>AI</em>视觉海报</span><span class="ic-sep">/</span><span><em>AI</em>创意延展</span></div>
+    <div class="ic-tools" aria-hidden="true">
+      <span class="ic-pill"><span class="ic-dot gpt"></span>GPT</span>
+      <span class="ic-pill"><span class="ic-dot sd"></span>Stable Diffusion</span>
+      <span class="ic-pill"><span class="ic-dot db"></span>DouBao</span>
+      <span class="ic-pill"><span class="ic-dot jm"></span>JIMeng</span>
+    </div>
+    <div class="ic-foot">
+      <span>See Workflow</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+    </div>
+  </a>
+
+  <!-- Left: Text Content -->
+  <div class="hero-top">
+    <div class="hero-text">
+      <h1 class="hero-title-large">AI赋能视觉创意<br/>VISUAL DESIGNER</h1>
+      <p class="hero-subtitle">用 AI与策略思维，构建高效的视觉逻辑与持续增长的设计引擎。</p>
+      <a href="#portfolio" class="hero-cta">
+        查看作品
+        <span class="arrow-circle">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+      </a>
+      <div class="hero-tags">
+        <span class="hero-tag"><span class="tag-dot"></span>视觉设计</span>
+        <span class="hero-tag"><span class="tag-dot"></span>3D基础渲染</span>
+        <span class="hero-tag"><span class="tag-dot"></span>4年设计经验</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Horizontal sliding carousel -->
+  <div class="hero-carousel">
+    <button class="carousel-arrow prev" aria-label="Previous">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="carousel-arrow next" aria-label="Next">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+
+    <div class="carousel" id="heroCarousel">
+      <div class="carousel-track" id="heroCarouselTrack">
+
+        <div class="carousel-card cc-image" style="background-image: url('imges/ONE/MEI (1).png');"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/MEI (3).png');"></div>
+
+        <div class="carousel-card cc-image" style="background-image: url('imges/ONE/PING (1).png');"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/PING (2).png');"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/aa3d8461-4e25-4c12-b486-d5aa93b4e2ba.png');"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/c61f5e7a-69cb-49ed-918e-a52cbcd4c46e.png');"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/QIKAN (1).png');"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/1.png'); background-position: center top;"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/封面.jpg'); background-position: left top;"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/yue (1).jpg');"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/yue (2).jpg');"></div>
+
+        <div class="carousel-card cc-photo" style="background-image: url('imges/ONE/yue (5).jpg');"></div>
+
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- 02 / WORK EXPERIENCE -->
+<section class="section" id="work">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2 class="section-title"><span class="title-en">Work<br/>Experience</span><span class="title-cn">工作经历</span></h2>
+    </div>
+
+    <div class="timeline">
+      <!-- 01 — 左 -->
+      <div class="tl-item left reveal">
+        <div class="tl-card">
+          <div class="tl-card-company">中大咨询</div>
+          <div class="tl-card-role">平面设计岗 · 实习生</div>
+          <div class="tl-card-label">工作内容</div>
+          <ul class="tl-card-list">
+            <li>企业品牌物料设计、主视觉设计</li>
+            <li>以主视觉为基础进行延展设计</li>
+          </ul>
+          <div class="tl-tags">
+            <span class="tl-tag">主视觉设计</span>
+            <span class="tl-tag">品牌物料</span>
+            <span class="tl-tag">延展设计</span>
+          </div>
+        </div>
+        <div class="tl-connector"></div>
+        <div class="tl-node">
+          <div class="tl-node-pulse"></div>
+          <div class="tl-node-ring"></div>
+          <div class="tl-node-inner">01</div>
+        </div>
+        <div class="tl-time">2022.07 — 2022.10</div>
+      </div>
+
+      <!-- 02 — 右 -->
+      <div class="tl-item right reveal" style="--rv-dly: 0.15s;">
+        <div class="tl-time">2023.07 — 2025.08</div>
+        <div class="tl-node">
+          <div class="tl-node-pulse"></div>
+          <div class="tl-node-ring"></div>
+          <div class="tl-node-inner">02</div>
+        </div>
+        <div class="tl-connector"></div>
+        <div class="tl-card">
+          <div class="tl-card-company">广州壹功里会议服务有限公司</div>
+          <div class="tl-card-role">视觉设计师</div>
+          <div class="tl-card-label">工作内容</div>
+          <ul class="tl-card-list">
+            <li><strong>主导会展项目设计与落地：</strong>会前实地测量与数据核验，独立完成展会主视觉创意设计，同步输出高还原度 3D 效果图，完成线上（会议直播物料、微官网、易企秀）与线下物料输出</li>
+            <li><strong>统筹运营宣传物料设计（视频号、公众号、小红书）：</strong>覆盖海报、宣传手册等物料，兼顾品牌视觉统一性与传播实用性，支撑市场推广与品牌曝光效率</li>
+            <li><strong>原创公司 IP 形象并推动应用：</strong>设计具有品牌辨识度的 IP 角色，将其延伸至日常宣传物料中，视觉输出融入 3D 元素（如 IP 形象 3D 化呈现、场景化 3D 背景）</li>
+            <li><strong>其他设计：</strong>主视觉、运营长图、海报、H5、手册等</li>
+          </ul>
+          <div class="tl-tags">
+            <span class="tl-tag">3D<span class="tl-tag-unit">效果图</span></span>
+            <span class="tl-tag">IP<span class="tl-tag-unit">形象原创</span></span>
+            <span class="tl-tag"><span class="tl-tag-num">3</span>大运营平台</span>
+            <span class="tl-tag">线上<span class="tl-tag-unit">+</span>线下物料</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 — 左 -->
+      <div class="tl-item left reveal" style="--rv-dly: 0.3s;">
+        <div class="tl-card">
+          <div class="tl-card-company">广东华亿广告有限公司</div>
+          <div class="tl-card-role">视觉设计师</div>
+          <div class="tl-card-label">工作内容</div>
+          <ul class="tl-card-list">
+            <li><strong>全流程设计：</strong>主要负责南方电网（南网）核心视觉设计，从客户需求对接、方案沟通到设计落地的全流程工作，高效推进各类设计物料交付</li>
+            <li><strong>活动设计：</strong>负责 3 次大型活动视觉设计（含会议视觉、物料延展设计），凭借高品质输出和服务态度获得客户表扬信认可</li>
+            <li><strong>文化墙设计：</strong>主导完成多面企业文化墙的设计、方案呈现与现场落地，涵盖资料收集、主题策划、版面设计、材质建议落地</li>
+          </ul>
+          <div class="tl-tags">
+            <span class="tl-tag">南网<span class="tl-tag-unit">全流程</span></span>
+            <span class="tl-tag"><span class="tl-tag-num">3</span>次大型活动</span>
+            <span class="tl-tag">多面<span class="tl-tag-unit">文化墙</span></span>
+            <span class="tl-tag">客户<span class="tl-tag-unit">表扬信</span></span>
+          </div>
+        </div>
+        <div class="tl-connector"></div>
+        <div class="tl-node">
+          <div class="tl-node-pulse"></div>
+          <div class="tl-node-ring"></div>
+          <div class="tl-node-inner">03</div>
+        </div>
+        <div class="tl-time">2025.11 — 2026.09</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 / PORTFOLIO -->
+<section class="section" id="portfolio">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2 class="section-title"><span class="title-en">Case<br/>Sharing</span><span class="title-cn">线上线下一体化活动落地实施项目</span></h2>
+    </div>
+
+    <div class="portfolio-rows reveal">
+      <!-- Row 1 — scroll left -->
+      <div class="marquee">
+        <div class="marquee-track" data-marquee>
+          <button class="case-card glass-card" type="button" data-case-idx="0">
+            <div class="case-image"><img src="imges/活动/1/封面.jpg" alt="活动案例 01"></div>
+            <div class="case-foot"><span class="name">活动案例 01</span></div>
+          </button>
+          <button class="case-card glass-card" type="button" data-case-idx="1">
+            <div class="case-image"><img src="imges/活动/2/封面.jpg" alt="活动案例 02"></div>
+            <div class="case-foot"><span class="name">活动案例 02</span></div>
+          </button>
+          <button class="case-card glass-card" type="button" data-case-idx="2">
+            <div class="case-image"><img src="imges/活动/3/封面.jpg" alt="活动案例 03"></div>
+            <div class="case-foot"><span class="name">活动案例 03</span></div>
+          </button>
+          <button class="case-card glass-card" type="button" data-case-idx="3">
+            <div class="case-image"><img src="imges/活动/4/封面.jpg" alt="活动案例 04"></div>
+            <div class="case-foot"><span class="name">活动案例 04</span></div>
+          </button>
+          <button class="case-card glass-card" type="button" data-case-idx="4">
+            <div class="case-image"><img src="imges/活动/5/封面.png" alt="活动案例 05"></div>
+            <div class="case-foot"><span class="name">活动案例 05</span></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 2 — scroll right (reverse) -->
+      <div class="marquee reverse">
+        <div class="marquee-track" data-marquee>
+          <button class="case-card glass-card" type="button" data-case-idx="5">
+            <div class="case-image"><img src="imges/活动/6/封面.png" alt="活动案例 06"></div>
+            <div class="case-foot"><span class="name">活动案例 06</span></div>
+          </button>
+          <button class="case-card glass-card" type="button" data-case-idx="6">
+            <div class="case-image"><img src="imges/活动/7/封面.png" alt="活动案例 07"></div>
+            <div class="case-foot"><span class="name">活动案例 07</span></div>
+          </button>
+          <button class="case-card glass-card" type="button" data-case-idx="7">
+            <div class="case-image"><img src="imges/活动/8/kv1.jpg" alt="活动案例 08"></div>
+            <div class="case-foot"><span class="name">活动案例 08</span></div>
+          </button>
+          <button class="case-card glass-card" type="button" data-case-idx="8">
+            <div class="case-image"><img src="imges/活动/9/kv.jpg" alt="活动案例 09"></div>
+            <div class="case-foot"><span class="name">活动案例 09</span></div>
+          </button>
+          <button class="case-card glass-card" type="button" data-case-idx="9">
+            <div class="case-image"><img src="imges/活动/10/7a83d292-aa5e-4a26-9ec8-749ad43fdf39.png" alt="活动案例 10"></div>
+            <div class="case-foot"><span class="name">活动案例 10</span></div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+    var caseGalleryData =[{"folder": "1", "cover": "imges/活动/1/封面.jpg", "images": ["imges/活动/1/封面.jpg", "imges/活动/1/12.4x7.1m-启动仪式.jpg", "imges/活动/1/【1个-丽萍展架-1.2x2m】签到处1.2x2m.jpg", "imges/活动/1/【1个-丽萍展架-1.2x2m】签到处信息指引-1.2x2m.jpg", "imges/活动/1/【1个-丽萍展架-1.2x2m】签到流程指引-1.2x2m.jpg", "imges/活动/1/【1个-丽萍展架】议程展架_主会场-1.2x2m.jpg", "imges/活动/1/【1个-普通易拉宝】议程展架_会场6-0.8x2m.jpg", "imges/活动/1/【1个】A3台签-交通接送.jpg", "imges/活动/1/【1个】A3台签-住宿办理.jpg", "imges/活动/1/【1个】A3台签-参会代表签到.jpg", "imges/活动/1/【1个】A3台签-签到处.jpg", "imges/活动/1/【3个-普通易拉宝0.8x1.2m】国际会议中心-底.jpg", "imges/活动/1/主会场-国际厅.jpg", "imges/活动/1/主持桌贴183cmx76cmh,两边45cm.jpg", "imges/活动/1/摄像框-主KV..png", "imges/活动/1/胸牌9.2x13cm-参会代表【数量250个，250g铜版纸（背面为二维码）尺寸9.2x13cm】.jpg", "imges/活动/1/胸牌9.2x13cm-参展商【数量30个，250g铜版纸（背面为二维码）尺寸9.2x13cm】.jpg", "imges/活动/1/胸牌9.2x13cm-工作人员【数量30个，250g铜版纸（背面为二维码）尺寸9.2x13cm】.jpg", "imges/活动/1/胸牌9.2x13cm-背面.jpg"], "count": 19, "title": "活动案例 01"}, {"folder": "2", "cover": "imges/活动/2/封面.jpg", "images": ["imges/活动/2/封面.jpg", "imges/活动/2/A3-交通接送.jpg", "imges/活动/2/A3-签到处.jpg", "imges/活动/2/A4，250g铜版纸，单面彩印 主会场130张-6月28日上午-雨果厅.jpg", "imges/活动/2/主会场-侧面.jpg", "imges/活动/2/会场-80x200cm【3个】.jpg", "imges/活动/2/会议晚餐6x10cm.jpg", "imges/活动/2/会议晚餐6x10cm22.jpg", "imges/活动/2/侧面 (2).jpg", "imges/活动/2/侧面.jpg", "imges/活动/2/正面.jpg", "imges/活动/2/签到处正面.jpg", "imges/活动/2/综合指引120x200cm.jpg", "imges/活动/2/议程展架-1.2x2m_6月28日 下午-VIP厅1.jpg", "imges/活动/2/餐券6x10cm2.jpg"], "count": 15, "title": "活动案例 02"}, {"folder": "3", "cover": "imges/活动/3/封面.jpg", "images": ["imges/活动/3/封面.jpg", "imges/活动/3/063e82f8-e224-469d-a6e0-1b871254f980.png", "imges/活动/3/6beddf97-a39f-479c-9c0e-cd18da994a6d.png", "imges/活动/3/7875b459-635a-474f-a2e6-6f8696a2738c.png", "imges/活动/3/9964940e-af60-4b8c-933b-c0b18568849b.png", "imges/活动/3/abf50e9a-e3bd-4caf-a1dc-6ac74213cc9c.png", "imges/活动/3/aeb558af-5e66-4dec-a56d-8f6c2352fbdb.png", "imges/活动/3/b1cb9cb6-9c9a-442a-97bf-947d402af8d3.png", "imges/活动/3/b9b30c9e-5ef3-4f44-9624-189da31ee47c.png", "imges/活动/3/dcba4764-1203-4664-9f3e-1ee3ac00bfcf.png", "imges/活动/3/df288cac-a364-49e4-a7fc-fadcbed43b64.png"], "count": 11, "title": "活动案例 03"}, {"folder": "4", "cover": "imges/活动/4/封面.jpg", "images": ["imges/活动/4/封面.jpg", "imges/活动/4/A3签到处.jpg", "imges/活动/4/H5 - 副本.jpg", "imges/活动/4/H5.jpg", "imges/活动/4/侧面.jpg", "imges/活动/4/参会代表-胸牌【9x12.6cm】.jpg", "imges/活动/4/合影区.jpg", "imges/活动/4/工作人员-胸牌【8.8x12.5cm】.jpg", "imges/活动/4/横幅【0.8x10m】.jpg", "imges/活动/4/满屏4560x1080.jpg", "imges/活动/4/背面-胸牌【8.8x12.5cm】.jpg", "imges/活动/4/麦牌-效果图.jpg"], "count": 12, "title": "活动案例 04"}, {"folder": "5", "cover": "imges/活动/5/封面.png", "images": ["imges/活动/5/封面.png", "imges/活动/5/0680b380-a156-4044-b3d1-114e5b1a4d36.png", "imges/活动/5/16bce6e2-f2c6-4d36-816f-290251792afb.png", "imges/活动/5/2a2fb15e-134e-4c04-a6fe-745751f04f5d.png", "imges/活动/5/4ac54194-ea60-4e64-8aed-8e8f5e6ab021.png", "imges/活动/5/52d74e44-14df-4128-87cc-635784d00687.png", "imges/活动/5/60a74b30-b35a-4430-85c1-04d2b3af29f2.png", "imges/活动/5/975b37d3-c521-4d95-869b-bc50098c13fe.png", "imges/活动/5/9a1b82b6-e789-4266-b2f7-f2b1f988306b.png", "imges/活动/5/a5e62100-c87f-4ed4-8f37-0529e039f273.png", "imges/活动/5/b2a20400-6c1e-40ae-86a1-4c232b3bc1d1.png", "imges/活动/5/cb75d95d-0f0b-45e2-adac-47cdb24dbd5b.png", "imges/活动/5/f030feb6-0b99-41ce-b8bc-90a44194f3d3.png"], "count": 13, "title": "活动案例 05"}, {"folder": "6", "cover": "imges/活动/6/封面.png", "images": ["imges/活动/6/封面.png", "imges/活动/6/154b8a4a-d85e-4259-a16a-6a6fa53f898e.png", "imges/活动/6/31ab5574-4773-412c-ae30-bfb90642c400.png", "imges/活动/6/41c8a9a6-fc75-4626-9ada-464cec420eee.png", "imges/活动/6/c03c0bf4-0a28-45fb-bc0d-60031662e6cd.png", "imges/活动/6/c5772d88-3d46-4823-a695-c3adc638290f.png", "imges/活动/6/d3985750-b76e-41a3-811a-e629cedf26fa.png", "imges/活动/6/e08e0702-67df-473d-ac08-cdc74372e9a0.png", "imges/活动/6/横幅.png", "imges/活动/6/签到处.jpg", "imges/活动/6/胸牌7x10cm（转曲）.png", "imges/活动/6/胸牌7x10cm（转曲）1.png"], "count": 12, "title": "活动案例 06"}, {"folder": "7", "cover": "imges/活动/7/封面.png", "images": ["imges/活动/7/封面.png", "imges/活动/7/手举牌1.png", "imges/活动/7/手举牌2.png", "imges/活动/7/海报.png", "imges/活动/7/臂章.png"], "count": 5, "title": "活动案例 07"}, {"folder": "8", "cover": "imges/活动/8/kv1.jpg", "images": ["imges/活动/8/kv1.jpg"], "count": 1, "title": "活动案例 08"}, {"folder": "9", "cover": "imges/活动/9/kv.jpg", "images": ["imges/活动/9/kv.jpg"], "count": 1, "title": "活动案例 09"}, {"folder": "10", "cover": "imges/活动/10/7a83d292-aa5e-4a26-9ec8-749ad43fdf39.png", "images": ["imges/活动/10/7a83d292-aa5e-4a26-9ec8-749ad43fdf39.png"], "count": 1, "title": "活动案例 10"}];
+    </script>
+  </div>
+</section>
+
+<!-- 04b / CASE SHARING 2 — stacked carousel showcase -->
+<section class="section case-sharing-2" id="case-sharing-2">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2 class="section-title"><span class="title-en">Case<br/>Sharing</span><span class="title-cn">AI 赋能流程可视化构建</span></h2>
+    </div>
+
+    <div class="cs2-stage reveal" id="cs2Stage">
+      <div class="cs2-deck" id="cs2Deck">
+        <div class="cs2-card" data-cs2-idx="0">
+          <img class="cs2-cover" src="imges/长图/1/封面6.png" alt="长图案例 01">
+          <div class="cs2-meta"><span>LONG IMAGE / 01</span><span>6 件</span></div>
+          <div class="cs2-foot"><span class="badge">长图案例 01</span></div>
+        </div>
+        <div class="cs2-card" data-cs2-idx="1">
+          <img class="cs2-cover" src="imges/长图/2/封面.png" alt="长图案例 02">
+          <div class="cs2-meta"><span>LONG IMAGE / 02</span><span>5 件</span></div>
+          <div class="cs2-foot"><span class="badge">长图案例 02</span></div>
+        </div>
+        <div class="cs2-card" data-cs2-idx="2">
+          <img class="cs2-cover" src="imges/长图/3/封面.png" alt="长图案例 03">
+          <div class="cs2-meta"><span>LONG IMAGE / 03</span><span>5 件</span></div>
+          <div class="cs2-foot"><span class="badge">长图案例 03</span></div>
+        </div>
+        <div class="cs2-card" data-cs2-idx="3">
+          <img class="cs2-cover" src="imges/长图/4/封面.jpg" alt="长图案例 04" style="object-position: 0% 50%;">
+          <div class="cs2-meta"><span>LONG IMAGE / 04</span><span>6 件</span></div>
+          <div class="cs2-foot"><span class="badge">长图案例 04</span></div>
+        </div>
+        <div class="cs2-card" data-cs2-idx="4">
+          <img class="cs2-cover" src="imges/长图/5/封面.png" alt="长图案例 05">
+          <div class="cs2-meta"><span>LONG IMAGE / 05</span><span>5 件</span></div>
+          <div class="cs2-foot"><span class="badge">长图案例 05</span></div>
+        </div>
+        <div class="cs2-card" data-cs2-idx="5">
+          <img class="cs2-cover" src="imges/长图/6/1.png" alt="长图案例 06" style="object-position: center top;">
+          <div class="cs2-meta"><span>LONG IMAGE / 06</span><span>3 件</span></div>
+          <div class="cs2-foot"><span class="badge">长图案例 06</span></div>
+        </div>
+        <div class="cs2-card" data-cs2-idx="6">
+          <img class="cs2-cover" src="imges/长图/7/1.png" alt="长图案例 07" style="object-position: center top;">
+          <div class="cs2-meta"><span>LONG IMAGE / 07</span><span>3 件</span></div>
+          <div class="cs2-foot"><span class="badge">长图案例 07</span></div>
+        </div>
+        <div class="cs2-card" data-cs2-idx="7">
+          <img class="cs2-cover" src="imges/长图/8/封面.png" alt="长图案例 08">
+          <div class="cs2-meta"><span>LONG IMAGE / 08</span><span>2 件</span></div>
+          <div class="cs2-foot"><span class="badge">长图案例 08</span></div>
+        </div>
+      </div>
+      <button class="cs2-nav prev" data-dir="prev" aria-label="prev">‹</button>
+      <button class="cs2-nav next" data-dir="next" aria-label="next">›</button>
+    </div>
+    <script>
+    var cs2GalleryData = [{"folder":"1","cover":"imges/长图/1/封面6.png","images":["imges/长图/1/封面6.png","imges/长图/1/1.png","imges/长图/1/3.png","imges/长图/1/4.png","imges/长图/1/5.png","imges/长图/1/7.png"],"count":6,"title":"长图案例 01"},{"folder":"2","cover":"imges/长图/2/封面.png","images":["imges/长图/2/封面.png","imges/长图/2/1屏.png","imges/长图/2/3屏.png","imges/长图/2/4屏.png","imges/长图/2/5屏.png"],"count":5,"title":"长图案例 02"},{"folder":"3","cover":"imges/长图/3/封面.png","images":["imges/长图/3/封面.png","imges/长图/3/631307c76d7378e18f56e28f929b99ff.png","imges/长图/3/9e954b805b21194c44bb47d993569fee.png","imges/长图/3/dc830875713bdf60eb77ca0cc721b109.png","imges/长图/3/df19e5fd84c3c6ab2074668850a16985.png"],"count":5,"title":"长图案例 03"},{"folder":"4","cover":"imges/长图/4/封面.jpg","images":["imges/长图/4/封面.jpg","imges/长图/4/幻灯片1.jpg","imges/长图/4/幻灯片2.jpg","imges/长图/4/幻灯片3.jpg","imges/长图/4/幻灯片4.jpg","imges/长图/4/幻灯片5.jpg"],"count":6,"title":"长图案例 04"},{"folder":"5","cover":"imges/长图/5/封面.png","images":["imges/长图/5/封面.png","imges/长图/5/07035701-4e40-48ee-95cb-1c4cf4cfd96e.png","imges/长图/5/093026e0-79a1-4242-bf92-e6ea14261c34.png","imges/长图/5/847709b1-809a-4ad8-b806-a39795c743a4.png","imges/长图/5/958fd166-3a39-4eb3-b859-453040513692.png"],"count":5,"title":"长图案例 05"},{"folder":"6","cover":"imges/长图/6/1.png","images":["imges/长图/6/1.png","imges/长图/6/2.png","imges/长图/6/3.png"],"count":3,"title":"长图案例 06"},{"folder":"7","cover":"imges/长图/7/1.png","images":["imges/长图/7/1.png","imges/长图/7/0dfecd85-b3b5-4565-a59e-af7f9c8ef100.png","imges/长图/7/c70c2575-b27c-469d-8669-e2a7312be30c.png"],"count":3,"title":"长图案例 07"},{"folder":"8","cover":"imges/长图/8/封面.png","images":["imges/长图/8/封面.png","imges/长图/8/3684274d-e393-46c9-b2a0-349174fcc849.png"],"count":2,"title":"长图案例 08"}];
+    </script>
+  </div>
+</section>
+
+<!-- 05 / ADVANTAGES -->
+<section class="section" id="advantages">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2 class="section-title"><span class="title-en">Personal<br/>Strengths</span><span class="title-cn">个人优势</span></h2>
+    </div>
+
+    <div class="advantages-grid">
+      <div class="glass-card-cyan advantage-card reveal">
+        <div class="advantage-card-glow"></div>
+        <div class="advantage-card-top">
+          <span class="advantage-card-num">01 <span>/ CORE</span></span>
+          <span class="advantage-card-tag">AI 提效</span>
+        </div>
+        <h3 class="advantage-card-title">AI 视觉创意<em>× 政企活动设计提效</em></h3>
+        <p class="advantage-card-desc">将 AI 工具深度融入活动视觉设计流程，建立「AI 创意生成 + 人工规范精修」的成熟模式，赋能主视觉快速产出。</p>
+        <div class="advantage-card-divider"></div>
+        <p class="advantage-card-desc">
+          <span class="advantage-card-desc-item">运用 AI 快速生成医疗会务、电力党建类主视觉多方向创意方案</span>
+          <span class="advantage-card-desc-item">人工校准画面风格，对齐南网科技蓝、红色党建、医疗活动视觉调性</span>
+          <span class="advantage-card-desc-item">依托 AI 批量产出创意备选，缩短前期方案探索周期，提升设计效率</span>
+        </p>
+      </div>
+
+      <div class="glass-card-cyan advantage-card reveal" style="--rv-dly: 0.12s;">
+        <div class="advantage-card-glow"></div>
+        <div class="advantage-card-top">
+          <span class="advantage-card-num">02 <span>/ CORE</span></span>
+          <span class="advantage-card-tag">全链路落地</span>
+        </div>
+        <h3 class="advantage-card-title">活动视觉体系<em>× 政企物料落地工作流</em></h3>
+        <p class="advantage-card-desc">具备医疗学术会议完整会务视觉经验，后续深耕南方电网宣传物料设计，搭建从主 KV 到全套线下物料的交付链路。</p>
+        <div class="advantage-card-divider"></div>
+        <p class="advantage-card-desc">
+          <span class="advantage-card-desc-item">拥有医疗学术会议全套视觉延展经验：主视觉、展板、现场活动物料整套落地</span>
+          <span class="advantage-card-desc-item">熟练依据南网 VI 规范，完成党建文化墙、安全宣传、活动阵地物料设计</span>
+          <span class="advantage-card-desc-item">精通各类广告物料材质、尺寸、印刷工艺，规避线下落地风险</span>
+        </p>
+      </div>
+
+      <div class="glass-card-cyan advantage-card reveal" style="--rv-dly: 0.24s;">
+        <div class="advantage-card-glow"></div>
+        <div class="advantage-card-top">
+          <span class="advantage-card-num">03 <span>/ CORE</span></span>
+          <span class="advantage-card-tag">双赛道深耕</span>
+        </div>
+        <h3 class="advantage-card-title">深耕医疗会务<em>+ 电力政企双赛道</em></h3>
+        <p class="advantage-card-desc">先后服务医疗学术会议、南方电网两大领域，理解不同行业的活动调性、宣传诉求与受众特点。</p>
+        <div class="advantage-card-divider"></div>
+        <p class="advantage-card-desc">
+          <span class="advantage-card-desc-item">熟悉医疗学术会议严谨专业的视觉表达与活动传播逻辑</span>
+          <span class="advantage-card-desc-item">长期沉淀电力行业党建、安全生产、大型活动宣传设计经验</span>
+          <span class="advantage-card-desc-item">可根据行业属性、线上线下场景灵活调整视觉策略</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section class="section contact-section" id="contact">
+  <div class="container contact-grid">
+    <div class="contact-left reveal">
+      <h2 class="contact-headline">
+        <span class="ch-line">LET'S BUILD</span>
+        <span class="ch-line">BETT<span class="highlight">ER</span> VISUAL</span>
+        <span class="ch-line">SYSTEMS
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L19 5"/><path d="M19 5H8"/><path d="M19 5V16"/></svg>
+        </span>
+      </h2>
+      <a class="contact-pill" href="#hero" title="返回首屏">
+        <span class="contact-pill-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8v2a3 3 0 0 0 3 3v3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-3a3 3 0 0 0 3-3v-2a8 8 0 0 0-8-8z"/><circle cx="9" cy="11" r="1.3"/><circle cx="15" cy="11" r="1.3"/></svg>
+        </span>
+        <span>CHENMMJ</span>
+      </a>
+    </div>
+
+    <div class="contact-right reveal" style="--rv-dly: 0.18s;">
+      <div class="contact-card glass-card">
+        <div class="contact-card-title">CONTACT</div>
+        <ul class="contact-list">
+          <li><span class="key">手机：</span>15989274780</li>
+          <li><span class="key">微信：</span>与手机同号</li>
+          <li><span class="key">邮箱：</span>1297917644@qq.com</li>
+        </ul>
+        <div class="contact-card-tag">Visual, Brand & AI Design</div>
+        <div class="contact-qr">
+          <img src="imges/contact-qr.jpg" alt="联系二维码" width="148" height="148">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer reveal">
+  <p class="footer-text">CHENMJ — 视觉设计师</p>
+  <p class="footer-copyright">© 2026 CHENMJ DESIGN. ALL RIGHTS RESERVED.</p>
+</footer>
+
+<script>
+// ========== Nav scroll effect ==========
+const nav = document.getElementById('nav');
+const navLinks = document.getElementById('navLinks');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 40) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+});
+
+// ========== Sliding active pill ==========
+const navAnchors = document.querySelectorAll('.nav-links a[data-nav]');
+function positionPill(target) {
+  if (!target || !navLinks) return;
+  const linkRect = target.getBoundingClientRect();
+  const navRect = navLinks.getBoundingClientRect();
+  const padLeft = parseFloat(getComputedStyle(navLinks).paddingLeft) || 0;
+  navLinks.style.setProperty('--pill-left', (linkRect.left - navRect.left - padLeft) + 'px');
+  navLinks.style.setProperty('--pill-width', linkRect.width + 'px');
+}
+function setActiveNav(href) {
+  // If the section isn't one of the nav targets, keep the current active state
+  let hasMatch = false;
+  navAnchors.forEach(a => { if (a.getAttribute('href') === href) hasMatch = true; });
+  if (!hasMatch) return;
+  let active = null;
+  navAnchors.forEach(a => {
+    const isMatch = a.getAttribute('href') === href;
+    a.classList.toggle('active', isMatch);
+    if (isMatch) active = a;
+  });
+  positionPill(active);
+}
+navAnchors.forEach(a => {
+  a.addEventListener('click', () => setActiveNav(a.getAttribute('href')));
+  a.addEventListener('mouseenter', () => positionPill(a));
+});
+navLinks.addEventListener('mouseleave', () => {
+  const active = document.querySelector('.nav-links a.active');
+  positionPill(active);
+});
+window.addEventListener('resize', () => {
+  const active = document.querySelector('.nav-links a.active');
+  positionPill(active);
+});
+
+// ========== Scroll spy — update active nav ==========
+const sections = document.querySelectorAll('section[id], div[id]');
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      setActiveNav('#' + entry.target.id);
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-20% 0px -50% 0px' });
+sections.forEach(s => navObserver.observe(s));
+
+// Init pill position
+const initialActive = document.querySelector('.nav-links a.active');
+positionPill(initialActive);
+
+// ========== Smooth scroll ==========
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const href = link.getAttribute('href');
+    if (!href || href === '#') {
+      e.preventDefault();
+      return;
+    }
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+// ========== Marquee — clone tracks so the scroll can loop seamlessly ==========
+document.querySelectorAll('[data-marquee]').forEach(track => {
+  // Duplicate every child once. Marks duplicates as aria-hidden so
+  // they don't show up twice to assistive tech.
+  const originals = Array.from(track.children);
+  originals.forEach(node => {
+    const clone = node.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    clone.setAttribute('tabindex', '-1');
+    track.appendChild(clone);
+  });
+});
+
+// ========== Case Sharing 2 — stacked carousel rotation ==========
+(function () {
+  const stage = document.getElementById('cs2Stage');
+  const deck = document.getElementById('cs2Deck');
+  if (!stage || !deck) return;
+  let cards = Array.from(deck.querySelectorAll('.cs2-card'));
+  let total = cards.length;
+  if (!total) return;
+  let front = 0;
+  let timer = null;      // interval driving subsequent rotations
+  let firstTimer = null; // short delay before the very first rotation
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let inView = false;
+  let hovered = false;
+
+  // Per-position placement for exactly 5 cards (3:4) with perspective tilt.
+  // NOTE: no `filter: blur()` here — changing blur re-rasterizes every card
+  // layer at the exact moment of switching, which is what caused the jank.
+  // Depth is conveyed purely by scale + opacity (both GPU-composited).
+  function positionFor(stageW) {
+    const baseGap = Math.min(stageW * 0.30, 420);
+    return {
+      '-2': { x: -baseGap * 1.75, y: 0, s: 0.74, o: 0.38, z: 1, rot: 20,  origin: 'right center' },
+      '-1': { x: -baseGap * 0.95, y: 0, s: 0.90, o: 0.80, z: 3, rot: 10,  origin: 'right center' },
+       '0': { x: 0,               y: 0, s: 1.08, o: 1,    z: 5, rot: 0,   origin: 'center center' },
+       '1': { x: baseGap * 0.95,  y: 0, s: 0.90, o: 0.80, z: 3, rot: -10, origin: 'left center' },
+       '2': { x: baseGap * 1.75,  y: 0, s: 0.74, o: 0.38, z: 1, rot: -20, origin: 'left center' }
+    };
+  }
+
+  function place() {
+    const positions = positionFor(stage.clientWidth);
+    cards.forEach((el, i) => {
+      const half = Math.floor(total / 2);
+      let offset = ((i - front + half) % total + total) % total - half;
+      const p = positions[String(offset)];
+      if (!p) {
+        // More cards than visible slots — park the extras out of sight.
+        el.style.opacity = '0';
+        el.style.zIndex = '0';
+        el.style.pointerEvents = 'none';
+        el.setAttribute('aria-hidden', 'true');
+        return;
+      }
+      el.style.pointerEvents = '';
+      el.style.transformOrigin = p.origin;
+      el.style.transform =
+        `translate(calc(-50% + ${p.x}px), calc(-50% + ${p.y}px)) scale(${p.s}) rotateY(${p.rot}deg)`;
+      el.style.opacity = p.o;
+      el.style.zIndex = p.z;
+      el.setAttribute('aria-hidden', i === front ? 'false' : 'true');
+    });
+  }
+
+  function rotate(dir = 1) {
+    front = (front + dir + total) % total;
+    place();
+  }
+
+  function start() {
+    if (timer || firstTimer || reducedMotion || !inView || hovered) return;
+    // First rotation fires the instant the section enters the viewport;
+    // afterwards settle into the 3.8s rhythm.
+    firstTimer = setTimeout(() => {
+      firstTimer = null;
+      rotate(1);
+      timer = setInterval(() => rotate(1), 3800);
+    }, 150);
+  }
+  function stop() {
+    clearInterval(timer); timer = null;
+    clearTimeout(firstTimer); firstTimer = null;
+  }
+
+  place();
+
+  // Auto-rotate only while the section is on screen — trigger as early as
+  // possible (low threshold) so rotation starts the moment it scrolls in
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      inView = entry.isIntersecting;
+      if (inView) start(); else stop();
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+  io.observe(stage);
+
+  // Pause on hover
+  stage.addEventListener('mouseenter', () => { hovered = true; stop(); });
+  stage.addEventListener('mouseleave', () => { hovered = false; start(); });
+
+  // Click side card to bring it to front; click the front card to open
+  // the shared lightbox with that case's full image list.
+  cards.forEach((el, i) => {
+    el.addEventListener('click', () => {
+      if (i !== front) { front = i; place(); }
+      else if (typeof cs2GalleryData !== 'undefined' && cs2GalleryData[i]) {
+        window.openCaseByData(cs2GalleryData[i]);
+      }
+    });
+  });
+
+  // Manual nav — restart the auto rhythm after a manual switch
+  stage.querySelectorAll('.cs2-nav').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      rotate(btn.dataset.dir === 'next' ? 1 : -1);
+      stop(); start();
+    });
+  });
+
+  // Cards whose cover image is missing (e.g. 长图/8 not added yet) remove
+  // themselves so the deck only shows cases that actually exist.
+  cards.forEach((el) => {
+    const img = el.querySelector('.cs2-cover');
+    if (!img) return;
+    img.addEventListener('error', () => {
+      const idx = cards.indexOf(el);
+      if (idx === -1) return;
+      el.remove();
+      cards.splice(idx, 1);
+      if (typeof cs2GalleryData !== 'undefined' && cs2GalleryData[idx]) cs2GalleryData.splice(idx, 1);
+      total = cards.length;
+      if (front >= total) front = 0;
+      place();
+    });
+  });
+
+  // Reduced motion → no auto rotation (handled by start() guard)
+
+  // Throttled re-position on resize (rAF) — avoids style thrash while dragging
+  let resizeTick = false;
+  window.addEventListener('resize', () => {
+    if (resizeTick) return;
+    resizeTick = true;
+    requestAnimationFrame(() => { resizeTick = false; place(); });
+  });
+})();
+
+// ========== Preload portfolio images at page idle ==========
+// Avoid stutter when scrolling into / clicking into portfolio sections:
+// case covers load eagerly (no loading=lazy), and we additionally pre-warm
+// the lightbox sub-images so clicks switch without delay.
+(function preloadPortfolio() {
+  const lists = [];
+  if (typeof caseGalleryData !== 'undefined') {
+    caseGalleryData.forEach(d => d.images && lists.push(d.images));
+  }
+  if (typeof cs2GalleryData !== 'undefined') {
+    cs2GalleryData.forEach(d => d.images && lists.push(d.images));
+  }
+  if (!lists.length) return;
+  const queue = lists.flat().filter(Boolean);
+  const start = () => {
+    let i = 0;
+    const tick = () => {
+      const slice = queue.slice(i, i + 3);
+      i += slice.length;
+      slice.forEach(src => { const im = new Image(); im.src = src; });
+      if (i < queue.length) {
+        (window.requestIdleCallback || window.requestAnimationFrame)(tick);
+      }
+    };
+    tick();
+  };
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start, { once: true });
+})();
+
+// ========== Scroll reveal animation ==========
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ========== Section titles — split into chars, each wobbles on hover ==========
+(function() {
+  document.querySelectorAll('.section-title').forEach(t => {
+    [t.querySelector('.title-en'), t.querySelector('.title-cn')].forEach(el => {
+      if (!el) return;
+      const isEn = el.classList.contains('title-en');
+      const sourceNodes = Array.from(el.childNodes);
+      el.textContent = '';
+      const addChar = (c) => {
+        const s = document.createElement('span');
+        s.className = 'ch';
+        s.textContent = c === ' ' ? '\u00A0' : c;
+        const dir = Math.random() < 0.5 ? -1 : 1;
+        const amp = (isEn ? 7 : 11) * dir * (0.6 + Math.random() * 0.9);
+        s.style.setProperty('--r1', amp.toFixed(1) + 'deg');
+        s.style.setProperty('--dly', (Math.random() * 0.45).toFixed(2) + 's');
+        el.appendChild(s);
+      };
+      sourceNodes.forEach(n => {
+        if (n.nodeType === Node.TEXT_NODE) {
+          [...n.textContent].forEach(addChar);
+        } else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === 'BR') {
+          el.appendChild(document.createElement('br')); // keep the two-line layout
+        }
+      });
+    });
+  });
+})();
+
+// ========== Hero — Mouse parallax on the photo (subtle) ==========
+(function() {
+  const hero = document.getElementById('hero');
+  if (!hero) return;
+  hero.addEventListener('mousemove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    hero.style.backgroundPosition =
+      `calc(50% + ${(x * 14).toFixed(1)}px) calc(30% + ${(y * 10).toFixed(1)}px)`;
+  });
+})();
+
+// ========== Timeline — line grows & flows as you scroll ==========
+(function() {
+  const tl = document.querySelector('.timeline');
+  if (!tl) return;
+  let ticking = false;
+  function update() {
+    ticking = false;
+    const rect = tl.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    // The line "draws" itself down as the timeline scrolls through the viewport
+    const trigger = vh * 0.85;
+    const progress = Math.min(1, Math.max(0, (trigger - rect.top) / rect.height));
+    tl.style.setProperty('--tl-h', (progress * 100).toFixed(2) + '%');
+  }
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  }
+  update();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+})();
+
+// ========== Hero Carousel — Auto-move marquee + drag + hover zoom ==========
+(function() {
+  const carousel = document.getElementById('heroCarousel');
+  const track = document.getElementById('heroCarouselTrack');
+  const prevBtn = document.querySelector('.carousel-arrow.prev');
+  const nextBtn = document.querySelector('.carousel-arrow.next');
+  if (!carousel || !track) return;
+
+  const STEP = 226; // card 210 + gap 16
+  let current = 130; // start with a small left peek
+  let halfWidth = 0;
+  let startX = 0, startY = 0, startTranslate = 0;
+  let active = false;
+  let direction = null; // 'h' or 'v'
+  let hovering = false;
+
+  // Duplicate all cards once -> seamless infinite marquee
+  Array.from(track.children).forEach(card => track.appendChild(card.cloneNode(true)));
+
+  function measure() {
+    const cards = track.children;
+    const n = Math.ceil(cards.length / 2);
+    halfWidth = cards[n] ? (cards[n].offsetLeft - cards[0].offsetLeft) : track.scrollWidth / 2;
+  }
+  measure();
+
+  function apply(instant) {
+    if (halfWidth > 0) current = ((current % halfWidth) + halfWidth) % halfWidth;
+    track.style.transition = instant ? 'none' : '';
+    track.style.setProperty('--carousel-x', -current + 'px');
+  }
+
+  // Auto move (pauses while hovering or dragging)
+  let lastT = performance.now();
+  function loop(t) {
+    const dt = Math.min(64, t - lastT);
+    lastT = t;
+    if (!active && !hovering && halfWidth > 0) {
+      current += 0.65 * (dt / 16.7);
+      apply(true);
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  carousel.addEventListener('mouseenter', () => hovering = true);
+  carousel.addEventListener('mouseleave', () => hovering = false);
+
+  // Mouse drag
+  carousel.addEventListener('mousedown', (e) => {
+    active = true; direction = null;
+    startX = e.pageX; startY = e.pageY;
+    startTranslate = current;
+    carousel.classList.add('dragging');
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!active) return;
+    const dx = e.pageX - startX;
+    const dy = e.pageY - startY;
+    if (!direction) {
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        direction = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      } else return;
+    }
+    if (direction === 'h') {
+      e.preventDefault();
+      current = startTranslate - dx * 1.15;
+      apply(true);
+    } else {
+      // vertical intent: release so page can scroll
+      active = false;
+      carousel.classList.remove('dragging');
+    }
+  });
+  window.addEventListener('mouseup', () => {
+    if (!active) return;
+    active = false;
+    carousel.classList.remove('dragging');
+  });
+
+  // Touch
+  carousel.addEventListener('touchstart', (e) => {
+    active = true; direction = null;
+    startX = e.touches[0].pageX;
+    startY = e.touches[0].pageY;
+    startTranslate = current;
+    hovering = true;
+    carousel.classList.add('dragging');
+  }, { passive: true });
+  carousel.addEventListener('touchmove', (e) => {
+    if (!active) return;
+    const dx = e.touches[0].pageX - startX;
+    const dy = e.touches[0].pageY - startY;
+    if (!direction) {
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        direction = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      } else return;
+    }
+    if (direction === 'h') {
+      e.preventDefault();
+      current = startTranslate - dx * 1.15;
+      apply(true);
+    } else {
+      active = false;
+      carousel.classList.remove('dragging');
+    }
+  }, { passive: false });
+  carousel.addEventListener('touchend', () => {
+    active = false;
+    carousel.classList.remove('dragging');
+    setTimeout(() => hovering = false, 1200);
+  });
+
+  // Wheel (trackpad horizontal)
+  carousel.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+      current += e.deltaX;
+      apply(true);
+    }
+  }, { passive: false });
+
+  // Arrows — smooth step
+  prevBtn && prevBtn.addEventListener('click', () => { current -= STEP; apply(false); });
+  nextBtn && nextBtn.addEventListener('click', () => { current += STEP; apply(false); });
+
+  // Resize
+  window.addEventListener('resize', () => {
+    measure();
+    apply(true);
+  });
+})();
+
+// ========== Hero info card — stick to hand position across screen sizes ==========
+(function() {
+  const hero = document.querySelector('.hero');
+  const card = document.querySelector('.hero-info-card');
+  if (!hero || !card) return;
+
+  // Hand target as a percentage of the *background image* (not the viewport)
+  // Adjust these two numbers if you want the card higher/lower/left/right on the hand
+  const HAND_X = 0.66; // 0~1, left to right within the rendered photo
+  const HAND_Y = 0.55; // 0~1, top to bottom within the rendered photo
+  const SHIFT_CARD_WIDTHS = -9; // shift card left/right by N card widths
+
+  function getCoverRect(imgW, imgH, ctnW, ctnH, posX, posY) {
+    const scale = Math.max(ctnW / imgW, ctnH / imgH);
+    const w = imgW * scale;
+    const h = imgH * scale;
+    const x = (ctnW - w) * posX;
+    const y = (ctnH - h) * posY;
+    return { x, y, w, h };
+  }
+
+  function parseBgPos(cs) {
+    const pos = cs.backgroundPosition.split(/\s+/);
+    let x = 0.5, y = 0.5;
+    if (pos[0]) {
+      const xv = parseFloat(pos[0]);
+      if (!isNaN(xv)) x = pos[0].includes('%') ? xv / 100 : xv;
+    }
+    if (pos[1]) {
+      const yv = parseFloat(pos[1]);
+      if (!isNaN(yv)) y = pos[1].includes('%') ? yv / 100 : yv;
+    }
+    return { x, y };
+  }
+
+  function positionCard() {
+    const cs = getComputedStyle(hero);
+    if (cs.backgroundSize !== 'cover') return; // only cover mode supported
+    const pos = parseBgPos(cs);
+    const urlMatch = cs.backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
+    const url = urlMatch ? urlMatch[1] : null;
+    if (!url) return;
+
+    const img = new Image();
+    img.onload = () => {
+      const rect = hero.getBoundingClientRect();
+      const imageRect = getCoverRect(img.naturalWidth, img.naturalHeight, rect.width, rect.height, pos.x, pos.y);
+      const EXTRA_SHIFT_X = -270; // extra pixel offset fine-tuning (negative = left)
+      const targetX = imageRect.x + imageRect.w * HAND_X + SHIFT_CARD_WIDTHS * card.offsetWidth + EXTRA_SHIFT_X;
+      const targetY = imageRect.y + imageRect.h * HAND_Y;
+
+      card.style.left = (targetX - card.offsetWidth / 2) + 'px';
+      card.style.top = targetY + 'px'; // vertical center handled by translateY(-50%)
+      card.style.right = 'auto';
+    };
+    img.src = url;
+  }
+
+  positionCard();
+  window.addEventListener('resize', positionCard);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(positionCard);
+})();
+
+// ========== Case Sharing lightbox ==========
+(function () {
+  const lightbox = document.getElementById('caseLightbox');
+  const mainImg = document.getElementById('lightboxMain');
+  const viewport = document.getElementById('lightboxViewport');
+  const thumbsWrap = document.getElementById('lightboxThumbs');
+  const prevBtn = lightbox.querySelector('.case-lightbox-prev');
+  const nextBtn = lightbox.querySelector('.case-lightbox-next');
+  const closeBtn = lightbox.querySelector('.case-lightbox-close');
+  const zoomLevel = document.getElementById('zoomLevel');
+  if (!lightbox || !mainImg || !thumbsWrap || !viewport) return;
+
+  let currentImages = [];
+  let currentIdx = 0;
+  let currentTitle = '';
+
+  // Zoom & pan state
+  let scale = 1;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+  const MIN_SCALE = 0.25;   // 25% — shrink small enough to see context
+  const MAX_SCALE = 1.5;    // 150%
+
+  function updateTransform() {
+    mainImg.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    mainImg.style.cursor = scale > 1 ? 'grab' : 'default';
+    zoomLevel.textContent = Math.round(scale * 100) + '%';
+  }
+
+  function resetZoom() {
+    scale = 1;
+    panX = 0;
+    panY = 0;
+    updateTransform();
+  }
+
+  function zoomIn() {
+    scale = Math.min(scale * 1.25, MAX_SCALE);
+    updateTransform();
+  }
+
+  function zoomOut() {
+    scale = Math.max(scale / 1.25, MIN_SCALE);
+    if (scale <= 1.001) { panX = 0; panY = 0; }
+    updateTransform();
+  }
+
+  function clampPan() {
+    const rect = viewport.getBoundingClientRect();
+    const imgRect = mainImg.getBoundingClientRect();
+    const extraX = Math.max(0, (imgRect.width - rect.width) / 2);
+    const extraY = Math.max(0, (imgRect.height - rect.height) / 2);
+    panX = Math.max(-extraX, Math.min(extraX, panX));
+    panY = Math.max(-extraY, Math.min(extraY, panY));
+  }
+
+  function renderThumbs() {
+    thumbsWrap.innerHTML = '';
+    currentImages.forEach((src, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('aria-label', `查看第 ${i + 1} 张`);
+      if (i === currentIdx) btn.classList.add('active');
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.loading = 'lazy';
+      btn.appendChild(img);
+      btn.addEventListener('click', () => showImage(i));
+      thumbsWrap.appendChild(btn);
+    });
+  }
+
+  function showImage(idx) {
+    currentIdx = idx;
+    mainImg.src = currentImages[idx];
+    mainImg.alt = `${currentTitle} - ${idx + 1}/${currentImages.length}`;
+    thumbsWrap.querySelectorAll('button').forEach((b, i) => b.classList.toggle('active', i === idx));
+    resetZoom();
+  }
+
+  function openCase(idx) {
+    const data = (typeof caseGalleryData !== 'undefined' && caseGalleryData)
+      ? caseGalleryData[idx]
+      : (window.caseGalleryData || [])[idx];
+    openCaseByData(data);
+  }
+
+  function openCaseByData(data) {
+    if (!data || !data.images || !data.images.length) return;
+    currentImages = data.images;
+    currentTitle = data.title || '';
+    currentIdx = 0;
+    renderThumbs();
+    showImage(0);
+    resetZoom();
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Expose so other modules (Case Sharing 2 deck) can open the lightbox
+  // directly with their own data object.
+  window.openCaseByData = openCaseByData;
+
+  function closeCase() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function next() { showImage((currentIdx + 1) % currentImages.length); }
+  function prev() { showImage((currentIdx - 1 + currentImages.length) % currentImages.length); }
+
+  // Includes the cloned loop cards inside the marquee tracks (cloning runs
+  // earlier in this same script, so the clones exist by now).
+  document.querySelectorAll('#portfolio [data-case-idx]').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      openCase(Number(card.dataset.caseIdx));
+    });
+  });
+
+  closeBtn.addEventListener('click', closeCase);
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeCase(); });
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  // Zoom toolbar
+  lightbox.querySelectorAll('.zoom-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const action = btn.dataset.zoom;
+      if (action === 'in') zoomIn();
+      else if (action === 'out') zoomOut();
+      else resetZoom();
+    });
+  });
+
+  // Mouse wheel zoom (with Ctrl / over image)
+  viewport.addEventListener('wheel', e => {
+    if (!lightbox.classList.contains('is-open')) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.12 : 0.12;
+    const next = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale + delta));
+    if (Math.abs(next - scale) < 0.01) return;
+    scale = next;
+    if (scale <= 1.001) { panX = 0; panY = 0; } else { clampPan(); }
+    updateTransform();
+  }, { passive: false });
+
+  // Drag to pan when zoomed
+  viewport.addEventListener('mousedown', e => {
+    if (scale <= 1) return;
+    isDragging = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+    mainImg.classList.add('is-grabbing');
+  });
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
+    updateTransform();
+  });
+  document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    mainImg.classList.remove('is-grabbing');
+    clampPan();
+    updateTransform();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('is-open')) return;
+    if (e.key === 'Escape') closeCase();
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === '+' || e.key === '=') zoomIn();
+    if (e.key === '-') zoomOut();
+    if (e.key === '0') resetZoom();
+  });
+})();
+
+</script>
+
+</body>
+</html>
